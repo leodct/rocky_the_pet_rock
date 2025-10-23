@@ -23,4 +23,21 @@ public:
     void Draw() const;
     void Update();
 };
+
+class SceneManager {
+private:
+    std::map<std::string, Scene*> scenes;
+    static Scene emptyScene;
+    Scene       *activeScene;
+public:
+    SceneManager();
+    ~SceneManager();
+
+    void   AddScene(std::string scene_id, Scene *_scene);
+    void   LoadScene(std::string scene_id);
+    Scene& GetActiveScene();
+
+    void Draw() const;
+    void Update();
+};
 #endif

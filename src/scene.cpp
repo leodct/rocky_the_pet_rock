@@ -80,3 +80,53 @@ void Scene::Update()
     if (ui)
         ui->Update();
 }
+
+
+// =================================
+// === SCENE MANAGER SHENANIGANS ===
+// =================================
+Scene SceneManager::emptyScene = Scene();
+
+SceneManager::SceneManager() : activeScene(&emptyScene)
+{
+}
+
+SceneManager::~SceneManager()
+{
+    for (auto &scene : scenes){
+        delete scene.second;
+    }
+}
+
+void SceneManager::AddScene(std::string scene_id, Scene *_scene)
+{
+    scenes.emplace(scene_id, _scene);
+}
+
+void SceneManager::LoadScene(std::string scene_id)
+{
+    auto it = scenes.find(scene_id);
+    if (it == scenes.end())
+    {
+        activeScene = &emptyScene;
+    }
+    else
+    {
+        activeScene = it->second;
+    }
+}
+
+Scene &SceneManager::GetActiveScene()
+{
+    return *activeScene;
+}
+
+void SceneManager::Draw() const
+{
+    activeScene->Draw();
+}
+
+void SceneManager::Update()
+{
+    activeScene->Update();
+}

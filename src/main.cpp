@@ -67,16 +67,23 @@ int main(){
     UI::Button* settings_btn = new UI::Button(LoadTexture((TEXTURES_PATH/"settings_button.png").u8string().c_str()), {Vector2{button_offset + button_spacing * 3, BUTTON_Y}, 0, 4});
     ui->AddElement("button_settings", settings_btn);
 
-    Scene main_scene;
-    main_scene.AddUi(ui);
-    main_scene.AddObject("rock", rock);
+    // ========================
+    // === SCENE SHENNIGANS ===
+    // ========================
+    Scene *main_scene = new Scene;
+    main_scene->AddUi(ui);
+    main_scene->AddObject("rock", rock);
+
+    SceneManager scene_manager;
+    scene_manager.AddScene("main_scene", main_scene);
+    scene_manager.LoadScene("main_scene");
 
 
     while (!WindowShouldClose() && !closeGame){
         // --- Game logic ---
-        main_scene.Update();
+        scene_manager.Update();
         // --- Drawing logic ---
-        main_scene.Draw();
+        scene_manager.Draw();
     }
 
     return 0;
