@@ -47,7 +47,7 @@ int main(){
     buttons_panel->SetDrawOrder(-1);
     ui->AddElement("buttons_panel", buttons_panel);
     // Exit button
-    UI::Button* exit_btn =  new UI::Button(LoadTexture((TEXTURES_PATH/"button_exit.png").u8string().c_str()), {Vector2{25, 25}, 0, 3});
+    UI::Button* exit_btn =  new UI::Button(LoadTexture((TEXTURES_PATH/"exit_button.png").u8string().c_str()), {Vector2{35, 35}, 0, 3});
     exit_btn->DefineOnPressCallback(ExitCallback);
     ui->AddElement("button_exit", exit_btn);
     // -----------------

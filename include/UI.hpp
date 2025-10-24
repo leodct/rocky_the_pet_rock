@@ -10,7 +10,9 @@
 
 class UIElement : public GameObject{
 protected:
-    int draw_order;
+    int  draw_order;
+    bool active;
+    void Init();
 public:
     UIElement();
     UIElement(Vector2 position);
@@ -19,6 +21,10 @@ public:
 
     int  GetDrawOrder() const;
     void SetDrawOrder(int _order);
+
+    void ToggleDisplayState();
+    void SetDisplayState(bool _active);
+    bool GetDisplayState();
 
     virtual void Draw() const = 0;
     virtual void Update() = 0;

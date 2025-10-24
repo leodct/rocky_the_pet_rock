@@ -6,18 +6,26 @@ using namespace UI;
 // Static member initialization
 Color Button::TINT_PRESS = { 150, 150, 150, 255 };
 
-UIElement::UIElement()
+void UIElement::Init()
 {
     draw_order = 0;
+    active     = true;
+}
+
+UIElement::UIElement()
+{
+    Init();
 }
 
 UIElement::UIElement(Vector2 position)
 {
+    Init();
     transform.position = position;
 }
 
 UIElement::UIElement(Transform2D _transform)
 {
+    Init();
     transform = _transform;
 }
 
@@ -36,6 +44,21 @@ void UIElement::SetDrawOrder(int _order)
     draw_order = _order;
     if (draw_order < MIN_DRAW_ORDER) draw_order = MIN_DRAW_ORDER;
     if (draw_order > MAX_DRAW_ORDER) draw_order = MAX_DRAW_ORDER;
+}
+
+void UIElement::ToggleDisplayState()
+{
+    active = !active;
+}
+
+void UIElement::SetDisplayState(bool _active)
+{
+    active = _active;
+}
+
+bool UIElement::GetDisplayState()
+{
+    return active;
 }
 
 UIContainer::~UIContainer()
@@ -77,6 +100,7 @@ const UIElement* UIContainer::GetElement(std::string id) const
 void UIContainer::Update()
 {
     for (auto& element : elements){
+        if (element.second->GetDisplayState())
         element.second->Update();
     }
 }
@@ -86,7 +110,7 @@ void UIContainer::Draw() const
     for (int i = MIN_DRAW_ORDER; i < MAX_DRAW_ORDER; i++)
     {
         for (auto& element : elements){
-            if (element.second->GetDrawOrder() == i)
+            if (element.second->GetDrawOrder() == i && element.second->GetDisplayState())
                 element.second->Draw();
         }
     }
