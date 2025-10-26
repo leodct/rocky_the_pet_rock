@@ -3,6 +3,7 @@
 #include "UI.hpp"
 #include "callbacks.hpp"
 #include "scene.hpp"
+#include "rockfallGameController.hpp"
 #include <iostream>
 
 int main(){
@@ -74,9 +75,15 @@ int main(){
     main_scene->AddUi(ui);
     main_scene->AddObject("rock", rock);
 
+    Scene *rockfall_game = new Scene;
+    RockfallGameController *rf_game_controller = new RockfallGameController();
+    rockfall_game->AddObject("game_controller", rf_game_controller);
+
     SceneManager scene_manager;
     scene_manager.AddScene("main_scene", main_scene);
-    scene_manager.LoadScene("main_scene");
+    scene_manager.AddScene("rockfall_game", rockfall_game);
+    //scene_manager.LoadScene("main_scene");
+    scene_manager.LoadScene("rockfall_game");
 
 
     while (!WindowShouldClose() && !closeGame){

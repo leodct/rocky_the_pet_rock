@@ -7,27 +7,68 @@
 
 #define ms std::chrono::milliseconds
 
-class RockfallGameController{
+class RockfallGameController : public GameObject{
+public:
+    // --------------------------
+    // --- FALLING ROCK CLASS ---
+    // --------------------------
+    class FallingRock{
+    private:
+        unsigned char texture_id;
+        float         rotation;
+        float         rotation_speed;
+        static const int MIN_ROT_SPEED,
+                         MAX_ROT_SPEED;
+        unsigned int  fall_speed;
+        static const unsigned int MAX_FALL_SPEED,
+                                  MIN_FALL_SPEED;
+        #define value_default 0
+        #define value_rare    1
+        #define value_golden  2
+        unsigned char value;
+        static const Color DEFAULT_TINT, RARE_TINT, GOLDEN_TINT;
+        static const float RARE_CHANCE, GOLDEN_CHANCE;
+        Vector2 position;
+        
+        void RandomizeValues();
+    public:
+        FallingRock(bool randomValues = true);
+
+        Vector2       GetPosition() const;
+        unsigned char GetValue() const;
+        void Draw() const;
+        void Update();
+    };
 private:
     // Main variables
-    bool pause;
-    bool playing;
-    int  score;
-    float rock_size;
+    bool  pause;
+    bool  playing;
+    int   score;
+    float player_size;
     static const float MIN_ROCK_SIZE;
     static const float MAX_ROCK_SIZE;
+    static const int   PLAYER_Y_POSITION;
     
-    // Textures related variables
+    // Texture related variables
     static Texture2D player_texture;
     static std::vector<Texture2D> rock_textures;
+    static Texture2D background_texture;
 
     // Time related variables
     static const ms MIN_TIME_BETWEEN_ROCKS;
     static const ms MAX_TIME_BETWEEN_ROCKS;
     ms time_since_rock;
 
+    // Game related variables
+    float            player_position;
+    static const int player_speed;
+    std::vector<FallingRock> rocks;
+    Rectangle player_hitbox;
+    void CalculatePlayerHitbox();
+
     // Others
     UIContainer *ui;
+    UIContainer *pauseui;
     Scene scene;
 public:
     RockfallGameController();
@@ -40,30 +81,15 @@ public:
     void EndGame();
 
     int   GetScore();
-    float GetRockSize();
+    float GetPlayerSize();
     float GetMaxRockSize();
     float GetMinRockSize();
     bool  GetPauseStatus() const;
     Texture2D &GetPlayerTexture();
     std::vector<Texture2D> &GetRockTextures();
 
-    void Draw();
-    void Update();
-
-    friend class FallingRock;
-};
-
-class FallingRock{
-private:
-    unsigned char texture_id;
-    float         rotation;
-    unsigned int  fall_speed;
-    static const unsigned int MAX_FALL_SPEED,
-                              MIN_FALL_SPEED;
-    
-    void RandomizeValues();
-public:
-    FallingRock(bool randomValues = true);
+    void Draw() const override;
+    void Update() override;
 };
 
 #endif
