@@ -29,7 +29,7 @@ extern Settings gameSettings;
 
 // Backgrounds
 extern Texture2D background_texture;
-void DrawBackground(bool tiled);
+void DrawBackground(bool tiled, Camera2D camera);
 
 // Drawing related things
 const int MIN_DRAW_ORDER = -100,

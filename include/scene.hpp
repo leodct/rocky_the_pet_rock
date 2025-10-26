@@ -10,7 +10,7 @@ private:
     UIContainer *ui;
     std::map<std::string, GameObject*> objects;
 public:
-    Scene() = default;
+    Scene();
     ~Scene();
     
     void AddUi(UIContainer *_ui);

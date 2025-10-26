@@ -1,6 +1,11 @@
 #include "scene.hpp"
 #include <iostream>
 
+Scene::Scene()
+{
+    ui     = nullptr;
+}
+
 Scene::~Scene()
 {
     delete ui;
@@ -60,7 +65,7 @@ void Scene::Draw() const
     BeginDrawing();
         ClearBackground(BLACK);
         BeginMode2D(camera);
-            DrawBackground(true);
+            DrawBackground(true, camera);
             for (auto &obj : objects)
             {
                 obj.second->Draw();
