@@ -4,6 +4,7 @@
 #include "globals.hxx"
 #include "scene.hpp"
 #include <chrono>
+#include <list>
 
 #define ms std::chrono::milliseconds
 
@@ -53,27 +54,33 @@ private:
     static Texture2D player_texture;
     static std::vector<Texture2D> rock_textures;
     static Texture2D background_texture;
-
+    void   LoadTextures();
+    
     // Time related variables
     static const ms MIN_TIME_BETWEEN_ROCKS;
     static const ms MAX_TIME_BETWEEN_ROCKS;
-    ms time_since_rock;
-
+    std::chrono::steady_clock::duration   time_to_next_rock;
+    std::chrono::steady_clock::time_point last_rock;
+    
     // Game related variables
-    float            player_position;
-    static const int player_speed;
-    std::vector<FallingRock> rocks;
+    float              player_position;
+    float              player_velocity;
+    static const float PLAYER_ACCELERATION;
+    static const int   PLAYER_MAX_SPEED;
+    static const float PLAYER_FRICTION;
+    static const float PLAYER_MIN_POS;
+    static const float PLAYER_MAX_POS;
+    std::list<FallingRock> rocks;
     Rectangle player_hitbox;
     void CalculatePlayerHitbox();
-
+    
     // Others
     UIContainer *ui;
     UIContainer *pauseui;
-    Scene scene;
-public:
+    public:
     RockfallGameController();
     ~RockfallGameController();
-
+    
     void Pause();
     void UnPause();
     void TogglePause();
