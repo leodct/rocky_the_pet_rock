@@ -4,6 +4,8 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#include <iostream>
+
 // Paths
 const std::filesystem::path EXECUTABLE_PATH = std::filesystem::current_path(),
                             RESOURCES_PATH  = EXECUTABLE_PATH / "resources",

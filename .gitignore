@@ -2,3 +2,4 @@
 /.vscode/settings.json
 /obj
 /lib
+/bin/ro*

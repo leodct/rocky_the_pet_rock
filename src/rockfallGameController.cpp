@@ -13,8 +13,8 @@ const float RockfallGameController::PLAYER_FRICTION     = 0.9f;
 const float RockfallGameController::PLAYER_MIN_POS      = 30;
 const float RockfallGameController::PLAYER_MAX_POS      = 170;
 
-const ms RockfallGameController::MAX_TIME_BETWEEN_ROCKS = ms(100);
-const ms RockfallGameController::MIN_TIME_BETWEEN_ROCKS = ms(1);
+const ms RockfallGameController::MAX_TIME_BETWEEN_ROCKS = ms(1000);
+const ms RockfallGameController::MIN_TIME_BETWEEN_ROCKS = ms(100);
 
 Texture2D RockfallGameController::player_texture = Texture2D();
 std::vector<Texture2D> RockfallGameController::rock_textures = {};
@@ -47,6 +47,7 @@ RockfallGameController::RockfallGameController() : pause(false), playing(false),
     pauseui = new UIContainer();
     CalculatePlayerHitbox();
     LoadTextures();
+    anim = AnimatedTexture("rockfall_game/bomb_", 2, 5, true);
 }
 
 RockfallGameController::~RockfallGameController()
@@ -81,6 +82,7 @@ void RockfallGameController::StartGame()
     camera.target = {100, 100};
     last_rock   = std::chrono::steady_clock::now();
     time_to_next_rock = ms(2000);
+    anim.Initialize();
 }
 
 void RockfallGameController::EndGame()
@@ -133,17 +135,20 @@ void RockfallGameController::Draw() const
         rock.Draw();
     }
     // Draw player
-    DrawRectangleLinesEx(player_hitbox, 2, {200, 20, 250, 255});
     DrawTexturePro(player_texture, {0,0,(float)player_texture.width,(float)player_texture.height}, player_hitbox, {0,0}, 0, WHITE);
-    DrawCircleV({player_position, PLAYER_Y_POSITION}, 2, RED);
 
     ui->Draw();
     if (pause)
         pauseui->Draw();
+    
+    Transform2D at = {{100, 100}};
+    at.scale = 5.0f;
+    anim.Draw(at);
 }
 
 void RockfallGameController::Update()
 {
+    anim.Update();
     if (!pause && playing)
     {
         // ------------------------------------
@@ -160,7 +165,7 @@ void RockfallGameController::Update()
             player_velocity = (player_velocity > PLAYER_MAX_SPEED) ? PLAYER_MAX_SPEED : player_velocity;
         }
         player_velocity *= PLAYER_FRICTION;
-        //if (player_velocity > -0.01 && player_velocity < 0.01) player_velocity = 0;
+        if (player_velocity > -0.01 && player_velocity < 0.01) player_velocity = 0;
         
         float npp = player_position + player_velocity * GetFrameTime();
         if (npp-player_size < PLAYER_MIN_POS) npp = PLAYER_MIN_POS+player_size;
@@ -174,13 +179,10 @@ void RockfallGameController::Update()
         if ((std::chrono::steady_clock::now() - last_rock).count() > time_to_next_rock.count())
         {
             last_rock = std::chrono::steady_clock::now();
-            time_to_next_rock = ms((rand() % (MIN_TIME_BETWEEN_ROCKS + MAX_TIME_BETWEEN_ROCKS).count()) + MIN_TIME_BETWEEN_ROCKS.count());
+            time_to_next_rock = ms(rand() % (MAX_TIME_BETWEEN_ROCKS.count() - MIN_TIME_BETWEEN_ROCKS.count()) + MIN_TIME_BETWEEN_ROCKS.count());
             rocks.push_front(FallingRock(true));
         }
-        //std::cout << "------------------------" << std::endl
-        //          << "Score: " << score << std::endl
-        //          << "Rock size: " << player_size << std::endl;
-        
+
         CalculatePlayerHitbox();
         // --------------------------------------
         // --- SCORE CALCULATION THINGIEMAGIK ---

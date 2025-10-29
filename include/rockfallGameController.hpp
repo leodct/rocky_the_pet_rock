@@ -2,6 +2,7 @@
 #define ROCKFALL_H
 
 #include "globals.hxx"
+#include "AnimatedTexture.hxx"
 #include "scene.hpp"
 #include <chrono>
 #include <list>
@@ -55,6 +56,7 @@ private:
     static std::vector<Texture2D> rock_textures;
     static Texture2D background_texture;
     void   LoadTextures();
+    AnimatedTexture anim;
     
     // Time related variables
     static const ms MIN_TIME_BETWEEN_ROCKS;
