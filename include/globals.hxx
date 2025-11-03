@@ -20,6 +20,7 @@ extern Camera2D camera;
 // Game
 extern bool closeGame;
 extern bool mouse_over_button;
+extern int  balance;
 
 // Settings
 struct Settings{

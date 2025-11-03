@@ -7,6 +7,7 @@ Settings gameSettings                     = { false, 90, 0.15f };
 bool closeGame                            = false;
 bool mouse_over_button                    = false;
 bool highlight_rock                       = true;
+int  balance                              = 0;
 
 void DrawBackground(bool tiled, Camera2D camera)
 {

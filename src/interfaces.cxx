@@ -8,6 +8,8 @@ void InitMainUI()
     // === MAIN UI ===
     // ===============
 
+    // === BOTTOM SIDE ===
+
     // -------------------------
     // --- BUTTON SHENNIGANS ---
     float button_spacing = 85;
@@ -16,13 +18,15 @@ void InitMainUI()
 
     // -----------------
     // Buttons panel
-    Transform2D panel_transform;
-    panel_transform.position = {0, BUTTON_Y - 50};
-    panel_transform.rotation = 0;
-    panel_transform.scale    = 1;
-    UI::Panel* buttons_panel = new UI::Panel(panel_transform, Vector2{WINDOW_SIZE.x, WINDOW_SIZE.y - (BUTTON_Y - 50)}, {240, 240, 255, 150}, {220, 220, 255, 200}, 5);
+    Transform2D bottom_panel_transform;
+    bottom_panel_transform.position = {0, BUTTON_Y - 50};
+    bottom_panel_transform.rotation = 0;
+    bottom_panel_transform.scale    = 1;
+    Color panel_col = {220, 220, 220, 250};
+    UI::Panel* buttons_panel = new UI::Panel(bottom_panel_transform, Vector2{WINDOW_SIZE.x, WINDOW_SIZE.y - (BUTTON_Y - 50)}, panel_col, panel_col, 5);
     buttons_panel->SetDrawOrder(-1);
     main_ui->AddElement("buttons_panel", buttons_panel);
+    // -----------------
     // Exit button
     UI::Button* exit_btn =  new UI::Button(LoadTexture((TEXTURES_PATH/"button_exit.png").u8string().c_str()), {Vector2{35, 35}, 0, 3});
     exit_btn->DefineOnPressCallback(ExitCallback);
@@ -44,12 +48,22 @@ void InitMainUI()
     // Settings button
     UI::Button* settings_btn = new UI::Button(LoadTexture((TEXTURES_PATH/"button_settings.png").u8string().c_str()), {Vector2{button_offset + button_spacing * 3, BUTTON_Y}, 0, 4});
     main_ui->AddElement("button_settings", settings_btn);
+
+    // === TOP SIDE ===
+    // --- Panel ---
+    Transform2D top_panel_transform = {{0,0}, 0, 1};
+    UI::Panel *top_panel = new UI::Panel(top_panel_transform, Vector2{WINDOW_SIZE.x, 75}, panel_col, panel_col, 5);
+    top_panel->SetDrawOrder(-1);
+    main_ui->AddElement("top_panel", top_panel);
     
 }
 
 UIContainer *games_ui = new UIContainer;
 void InitGamesUI()
 {
+    // =============================
+    // === MINIGAME SELECTION UI ===
+    // =============================
     games_ui->SetDrawOrder(main_ui->GetDrawOrder() + 1);
 
     Transform2D panel_transform  = {{25, 25}, 0, 1};

@@ -120,7 +120,7 @@ namespace UI
     class Label : public UIElement{
     public:
         enum class ALIGNMENT { LEFT, MIDDLE, RIGHT };
-    private:
+    protected:
         Color text_col;
         std::string text;
         unsigned int text_size;
@@ -145,5 +145,40 @@ namespace UI
         void Draw() const override;
 
     };
+
+    // ------------------------------
+    // --- VARIABLE DISPLAY CLASS ---
+    // ------------------------------
+    template <typename T>
+    class VariableDisplay : public Label{
+    private:
+        const T *variable;
+    public:
+        VariableDisplay(T *_variable, Transform2D _transform = {}, unsigned int _text_size = 1, Color _text_col = BLACK, ALIGNMENT _alignment = ALIGNMENT::LEFT);
+        T   &GetVariable() const;
+
+        void Update() override;
+    };
+
+    template <typename T>
+    UI::VariableDisplay<T>::VariableDisplay(T *_variable, Transform2D _transform, unsigned int _text_size, Color _text_col, ALIGNMENT _alignment) : variable(_variable)
+    {
+        transform = _transform;
+        text_size = _text_size;
+        text_col  = _text_col;
+        alignment = _alignment;
+    }
+
+    template <typename T>
+    inline T &VariableDisplay<T>::GetVariable() const
+    {
+        return variable;
+    }
+
+    template <typename T>
+    inline void VariableDisplay<T>::Update()
+    {
+        text = std::to_string(*variable);
+    }
 }
 #endif // UI_H
