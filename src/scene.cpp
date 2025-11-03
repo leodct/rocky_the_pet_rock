@@ -3,26 +3,40 @@
 
 Scene::Scene()
 {
-    ui     = nullptr;
 }
 
 Scene::~Scene()
 {
-    delete ui;
+    for (auto &ui : interfaces)
+    {
+        delete ui.second;
+    }
     for (auto &obj : objects)
     {
         delete obj.second;
     }
 }
 
-void Scene::AddUi(UIContainer *_ui)
+void Scene::AddUi(std::string id, UIContainer *_ui)
 {
-    ui = _ui;
+    interfaces.emplace(id, _ui);
+}
+
+void Scene::RemoveUI(std::string id)
+{
+    delete interfaces[id];
+    interfaces.erase(id);
 }
 
 void Scene::AddObject(std::string id, GameObject *_object)
 {
     objects.emplace(id, _object);
+}
+
+void Scene::RemoveObject(std::string id)
+{
+    delete objects[id];
+    objects.erase(id);
 }
 
 void Scene::AddObjectList(std::map<std::string, GameObject *> _objects)
@@ -60,6 +74,36 @@ const GameObject &Scene::GetObject(std::string id) const
     }
 }
 
+UIContainer &Scene::GetUI(std::string id)
+{
+    auto it = interfaces.find(id);
+    if (it != interfaces.end())
+    {
+        return *it->second;
+    }
+    else
+    {
+        std::cerr << "Error! Object " << id << " not found!";
+        static UIContainer defaultui;
+        return defaultui;
+    }
+}
+
+const UIContainer &Scene::GetUI(std::string id) const
+{
+    auto it = interfaces.find(id);
+    if (it != interfaces.end())
+    {
+        return *it->second;
+    }
+    else
+    {
+        std::cerr << "Error! Object " << id << " not found!";
+        static UIContainer defaultui;
+        return defaultui;
+    }
+}
+
 void Scene::Draw() const
 {
     BeginDrawing();
@@ -71,8 +115,16 @@ void Scene::Draw() const
                 obj.second->Draw();
             }
         EndMode2D();
-        if (ui)
-            ui->Draw();
+        for (int i = MIN_DRAW_ORDER; i <= MAX_DRAW_ORDER; i++)
+        {
+            for (auto &ui : interfaces)
+            {
+                if (ui.second->GetDrawOrder() == i)
+                {
+                    ui.second->Draw();
+                }
+            }
+        }
     EndDrawing();
 }
 
@@ -82,8 +134,10 @@ void Scene::Update()
     {
         obj.second->Update();
     }
-    if (ui)
-        ui->Update();
+    for (auto &ui : interfaces)
+    {
+        ui.second->Update();
+    }
 }
 
 

@@ -1,11 +1,12 @@
 #include "globals.hxx"
 
-Camera2D  camera             = {};
-Texture2D background_texture = {};
+Camera2D  camera                          = {};
+Texture2D background_texture              = {};
 std::vector<Texture2D> cosmetics_textures = {};
-Settings gameSettings = { false, 90, 0.15f };
-bool closeGame = false;
-bool mouse_over_button = false;
+Settings gameSettings                     = { false, 90, 0.15f };
+bool closeGame                            = false;
+bool mouse_over_button                    = false;
+bool highlight_rock                       = true;
 
 void DrawBackground(bool tiled, Camera2D camera)
 {

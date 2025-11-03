@@ -7,18 +7,22 @@
 
 class Scene {
 private:
-    UIContainer *ui;
-    std::map<std::string, GameObject*> objects;
+    std::map<std::string, UIContainer*> interfaces;
+    std::map<std::string, GameObject*>  objects;
 public:
     Scene();
     ~Scene();
     
-    void AddUi(UIContainer *_ui);
+    void AddUi(std::string id, UIContainer *_ui);
+    void RemoveUI(std::string id);
     void AddObject(std::string id, GameObject *_object);
+    void RemoveObject(std::string id);
     void AddObjectList(std::map<std::string, GameObject*> _objects);
 
-    GameObject       &GetObject(std::string id);
-    const GameObject &GetObject(std::string id) const;
+    GameObject        &GetObject(std::string id);
+    const GameObject  &GetObject(std::string id) const;
+    UIContainer       &GetUI(std::string id);
+    const UIContainer &GetUI(std::string id) const;
 
     void Draw() const;
     void Update();

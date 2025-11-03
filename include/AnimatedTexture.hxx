@@ -27,13 +27,15 @@ public:
     void Initialize();
     bool IsInitialized() const;
 
+    void Load(std::string texture_name, int frame_count, int fps = 60, bool _loop = true);
+
     void Play();
     void Pause();
     void Resume();
     void Stop();
     void Reset();
 
-    void Draw(Transform2D &transform) const;
+    void Draw(Transform2D transform) const;
     void Update();
 };
 

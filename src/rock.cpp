@@ -6,7 +6,21 @@
 void Rock::DrawRock() const
 {
     Vector2 drawPos = { transform.position.x - (texture.width / 2), transform.position.y - (texture.height / 2)};
+    Vector2 rp = {transform.position.x - (texture.width * transform.scale) / 2, transform.position.y - (texture.height * transform.scale) / 2};
+    Vector2 mpos = GetScreenToWorld2D(GetMousePosition(), camera);
+    Rectangle rr = {rp.x, rp.y, (float)texture.width * transform.scale, (float)texture.height * transform.scale};
+
+    bool shader = highlight && CheckCollisionPointRec(mpos, rr);
+    if (shader)
+    {
+        ConfigOutlineShader(true, camera.zoom / 2);
+        BeginShaderMode(outline_shader);
+    }
     DrawTextureEx(texture, drawPos, transform.rotation, transform.scale, WHITE);
+    if (shader){
+        EndShaderMode();
+        ConfigOutlineShader(false);
+    }
     switch(equipped_cosmetic){
         case COSMETICS::DAISY:      DrawTextureEx(cosmetics_textures[static_cast<int>(COSMETICS::DAISY)], drawPos, transform.rotation, transform.scale, WHITE); break;
         case COSMETICS::SUNGLASSES: DrawTextureEx(cosmetics_textures[static_cast<int>(COSMETICS::SUNGLASSES)], drawPos, transform.rotation, transform.scale, WHITE); break;
@@ -31,6 +45,7 @@ void Rock::InitRock()
 {
     LoadRockTexture();
     equipped_cosmetic = COSMETICS::NONE;
+    highlight = true;
 }
 
 Rock::Rock(Transform2D _transform)
@@ -62,24 +77,34 @@ COSMETICS Rock::GetEquippedCosmetic() const
     return equipped_cosmetic;
 }
 
+bool Rock::ShouldHighlight() const
+{
+    return highlight;
+}
+
+void Rock::EnableHighlight()
+{
+    highlight = true;
+}
+
+void Rock::DisableHighlight()
+{
+    highlight = false;
+}
+
+void Rock::ToggleHighlight()
+{
+    highlight = !highlight;
+}
+
+void Rock::SetHighlight(bool _highlight)
+{
+    highlight = _highlight;
+}
+
 void Rock::Draw() const
 {
-    Vector2 rp = {transform.position.x - (texture.width * transform.scale) / 2, transform.position.y - (texture.height * transform.scale) / 2};
-    Vector2 mpos = GetScreenToWorld2D(GetMousePosition(), camera);
-    Rectangle rr = {rp.x, rp.y, (float)texture.width * transform.scale, (float)texture.height * transform.scale};
-    if (CheckCollisionPointRec(mpos, rr))
-    {
-        ConfigOutlineShader(true, camera.zoom / 2);
-        BeginShaderMode(outline_shader);
-        DrawRock();
-        EndShaderMode();
-        ConfigOutlineShader(false);
-    }
-    else
-    {
-        DrawRock();
-    }
-    //std::cout << "assfdsnuruknfsorieljfsndjeliajmkd" << std::endl;
+    DrawRock();
 }
 
 void Rock::Update()

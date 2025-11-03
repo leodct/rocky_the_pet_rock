@@ -12,6 +12,7 @@ private:
     void LoadRockTexture();
     void InitRock();
     void DrawRock() const;
+    bool highlight;
 public:
     Rock(Transform2D _transform);
     Rock(Vector2 position);
@@ -19,6 +20,12 @@ public:
 
     void      SetCosmetic(COSMETICS new_cosmetic);
     COSMETICS GetEquippedCosmetic() const;
+
+    bool ShouldHighlight() const;
+    void EnableHighlight();
+    void DisableHighlight();
+    void ToggleHighlight();
+    void SetHighlight(bool _highlight);
 
     void Draw() const override;
     void Update() override;

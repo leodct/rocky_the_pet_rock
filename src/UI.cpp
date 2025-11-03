@@ -9,21 +9,21 @@ Color Button::TINT_PRESS = { 150, 150, 150, 255 };
 void UIElement::Init()
 {
     draw_order = 0;
-    active     = true;
+    enabled = active;
 }
 
-UIElement::UIElement()
+UIElement::UIElement(bool _active) : active(_active)
 {
     Init();
 }
 
-UIElement::UIElement(Vector2 position)
+UIElement::UIElement(Vector2 position, bool _active) : active(_active)
 {
     Init();
     transform.position = position;
 }
 
-UIElement::UIElement(Transform2D _transform)
+UIElement::UIElement(Transform2D _transform, bool _active) : active(_active)
 {
     Init();
     transform = _transform;
@@ -59,6 +59,30 @@ void UIElement::SetDisplayState(bool _active)
 bool UIElement::GetDisplayState()
 {
     return active;
+}
+
+void UIElement::Enable()
+{
+    enabled = true;
+}
+
+void UIElement::Disable()
+{
+    enabled = false;
+}
+
+void UIElement::ToggleEnabled()
+{
+    enabled = !enabled;
+}
+
+bool UIElement::IsEnabled() const
+{
+    return enabled;
+}
+
+UIContainer::UIContainer() : draw_order(0)
+{
 }
 
 UIContainer::~UIContainer()
@@ -97,6 +121,16 @@ const UIElement* UIContainer::GetElement(std::string id) const
     return nullptr;
 }
 
+int UIContainer::GetDrawOrder() const
+{
+    return draw_order;
+}
+
+void UIContainer::SetDrawOrder(int _order)
+{
+    draw_order = _order;
+}
+
 void UIContainer::Update()
 {
     for (auto& element : elements){
@@ -113,6 +147,38 @@ void UIContainer::Draw() const
             if (element.second->GetDrawOrder() == i && element.second->GetDisplayState())
                 element.second->Draw();
         }
+    }
+}
+
+void UIContainer::EnableAll()
+{
+    for (auto &element : elements)
+    {
+        element.second->SetDisplayState(true);
+    }
+}
+
+void UIContainer::DisableAll()
+{
+    for (auto &element : elements)
+    {
+        element.second->SetDisplayState(false);
+    }
+}
+
+void UIContainer::ToggleAll()
+{
+    for (auto &element : elements)
+    {
+        element.second->ToggleDisplayState();
+    }
+}
+
+void UIContainer::SetAllVisibilityTo(bool value)
+{
+    for (auto &element : elements)
+    {
+        element.second->SetDisplayState(value);
     }
 }
 
@@ -204,19 +270,22 @@ void Button::DefineOnPressCallback(std::function<void()> callback)
 }
 
 void Button::Update() {
-    Vector2 mousePos = GetMousePosition();
+    if (enabled)
+    {
+        Vector2 mousePos = GetMousePosition();
 
-    hover = CheckCollisionPointRec(mousePos, hitbox);
-    
-    if (press && !IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
-        callbackFunction();
-        press = false;
-    }
-    if (hover && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        press = true;
-    }
-    else if (!hover){
-        press = false;
+        hover = CheckCollisionPointRec(mousePos, hitbox);
+        
+        if (press && !IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
+            callbackFunction();
+            press = false;
+        }
+        if (hover && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            press = true;
+        }
+        else if (!hover){
+            press = false;
+        }
     }
 }
 
@@ -266,4 +335,77 @@ void Panel::Draw() const
 
 void UI::Panel::Update()
 {
+}
+
+UI::Label::Label(Transform2D _transform, std::string _text, unsigned int _text_size, Color _text_col, ALIGNMENT _alignment) : text_col(_text_col), text(_text), text_size(_text_size), alignment(_alignment)
+{
+    transform = _transform;
+}
+
+std::string &UI::Label::GetText()
+{
+    return text;
+}
+
+const std::string &UI::Label::GetText() const
+{
+    return text;
+}
+
+void UI::Label::SetText(std::string _text)
+{
+    text = _text;
+}
+
+unsigned int UI::Label::GetFontSize() const
+{
+    return text_size;
+}
+
+void UI::Label::SetFontSize(unsigned int _size)
+{
+    text_size = _size;
+}
+
+UI::Label::ALIGNMENT UI::Label::GetAlignment() const
+{
+    return alignment;
+}
+
+void UI::Label::SetAlignment(ALIGNMENT _alignment)
+{
+    alignment = _alignment;
+}
+
+Color UI::Label::GetTextColor() const
+{
+    return text_col;
+}
+
+void UI::Label::SetTextColor(Color color)
+{
+    text_col = color;
+}
+
+void UI::Label::Update()
+{
+}
+
+void UI::Label::Draw() const
+{
+    float spacing = 1;
+    Vector2 origin = MeasureTextEx(GetFontDefault(), text.c_str(), text_size, spacing);
+    origin.y = origin.y / 2;
+    switch (alignment)
+    {
+        case ALIGNMENT::LEFT:
+            origin.x = 0;
+            break;
+        case ALIGNMENT::RIGHT:
+            origin.x = origin.x / 2;
+            break;
+        default: // case ALIGNMENT::MIDDLE:
+            break;
+    }
+    DrawTextPro(GetFontDefault(), text.c_str(), transform.position, origin, transform.rotation, text_size, spacing, text_col);
 }

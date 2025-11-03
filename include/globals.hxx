@@ -36,6 +36,7 @@ void DrawBackground(bool tiled, Camera2D camera);
 // Drawing related things
 const int MIN_DRAW_ORDER = -100,
           MAX_DRAW_ORDER =  100;
+extern bool highlight_rock;
 
 // Cosmetics
 enum class COSMETICS {

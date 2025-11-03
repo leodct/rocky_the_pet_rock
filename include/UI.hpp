@@ -12,11 +12,12 @@ class UIElement : public GameObject{
 protected:
     int  draw_order;
     bool active;
+    bool enabled;
     void Init();
 public:
-    UIElement();
-    UIElement(Vector2 position);
-    UIElement(Transform2D _transform);
+    UIElement(bool _active = true);
+    UIElement(Vector2 position, bool _active = true);
+    UIElement(Transform2D _transform, bool _active = true);
     virtual ~UIElement();
 
     int  GetDrawOrder() const;
@@ -26,6 +27,12 @@ public:
     void SetDisplayState(bool _active);
     bool GetDisplayState();
 
+    void Enable();
+    void Disable();
+    void ToggleEnabled();
+    bool IsEnabled() const;
+    
+
     virtual void Draw() const = 0;
     virtual void Update() = 0;
 };
@@ -33,9 +40,9 @@ public:
 class UIContainer {
 private:
     std::map<std::string, UIElement*> elements;
-
+    int draw_order;
 public:
-    UIContainer() = default;
+    UIContainer();
     ~UIContainer();
 
     void AddElement(std::string id, UIElement* _element);
@@ -43,8 +50,16 @@ public:
     UIElement*              GetElement(std::string id);
     const UIElement*        GetElement(std::string id) const;
 
+    int  GetDrawOrder() const;
+    void SetDrawOrder(int _order);
+
     void Update();
     void Draw() const;
+
+    void EnableAll();
+    void DisableAll();
+    void ToggleAll();
+    void SetAllVisibilityTo(bool value);
 };
 
 namespace UI
@@ -99,5 +114,36 @@ namespace UI
         void Update() override;
     };
 
+    // -------------------
+    // --- LABEL CLASS ---
+    // -------------------
+    class Label : public UIElement{
+    public:
+        enum class ALIGNMENT { LEFT, MIDDLE, RIGHT };
+    private:
+        Color text_col;
+        std::string text;
+        unsigned int text_size;
+        ALIGNMENT alignment;
+    public:
+        Label(Transform2D _transform = {}, std::string _text = "text", unsigned int _text_size = 1, Color _text_col = BLACK, ALIGNMENT _alignment = ALIGNMENT::LEFT);
+
+        std::string       &GetText();
+        const std::string &GetText() const;
+        void               SetText(std::string _text);
+
+        unsigned int       GetFontSize() const;
+        void               SetFontSize(unsigned int _size);
+
+        ALIGNMENT         GetAlignment() const;
+        void               SetAlignment(ALIGNMENT _alignment);
+
+        Color              GetTextColor() const;
+        void               SetTextColor(Color color);
+
+        void Update() override;
+        void Draw() const override;
+
+    };
 }
 #endif // UI_H

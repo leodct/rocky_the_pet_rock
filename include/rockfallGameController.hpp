@@ -11,35 +11,65 @@
 
 class RockfallGameController : public GameObject{
 public:
-    // --------------------------
-    // --- FALLING ROCK CLASS ---
-    // --------------------------
-    class FallingRock{
-    private:
-        unsigned char texture_id;
+// ----------------------------
+// --- FALLING OBJECT CLASS ---
+// ----------------------------
+    class FallingObject{
+    protected:
+        unsigned int  fall_speed;
         float         rotation;
         float         rotation_speed;
-        static const int MIN_ROT_SPEED,
-                         MAX_ROT_SPEED;
-        unsigned int  fall_speed;
         static const unsigned int MAX_FALL_SPEED,
                                   MIN_FALL_SPEED;
+        static const int          MIN_ROT_SPEED,
+                                  MAX_ROT_SPEED;
+        Vector2 position;
+        #define value_bomb    255
         #define value_default 0
         #define value_rare    1
         #define value_golden  2
         unsigned char value;
-        static const Color DEFAULT_TINT, RARE_TINT, GOLDEN_TINT;
-        static const float RARE_CHANCE, GOLDEN_CHANCE;
-        Vector2 position;
-        
+    
         void RandomizeValues();
     public:
-        FallingRock(bool randomValues = true);
+        FallingObject();
+        virtual ~FallingObject() = default;
 
         Vector2       GetPosition() const;
         unsigned char GetValue() const;
-        void Draw() const;
-        void Update();
+
+        virtual void Draw() const = 0;
+        virtual void Update() = 0;
+    };
+// ------------------------------
+// --- FALLING OBSTACLE CLASS ---
+// ------------------------------
+    class FallingObstacle : public FallingObject{
+    private:
+        static AnimatedTexture texture;
+    public:
+        FallingObstacle(bool random_values = true);
+
+        void Draw() const override;
+        void Update() override;
+
+        friend class RockfallGameController;
+    };
+
+// --------------------------
+// --- FALLING ROCK CLASS ---
+// --------------------------
+    class FallingRock : public FallingObject{
+    private:
+        unsigned char texture_id;
+        static const Color DEFAULT_TINT, RARE_TINT, GOLDEN_TINT;
+        static const float RARE_CHANCE, GOLDEN_CHANCE;
+        
+    public:
+        FallingRock(bool randomValues = true);
+
+        void Draw() const override;
+        void Update() override;
     };
 private:
     // Main variables
@@ -47,6 +77,9 @@ private:
     bool  playing;
     int   score;
     float player_size;
+    float bomb_chance;
+    static const float MAX_BOMB_CHANCE;
+    static const float MIN_BOMB_CHANCE;
     static const float MIN_ROCK_SIZE;
     static const float MAX_ROCK_SIZE;
     static const int   PLAYER_Y_POSITION;
@@ -56,7 +89,6 @@ private:
     static std::vector<Texture2D> rock_textures;
     static Texture2D background_texture;
     void   LoadTextures();
-    AnimatedTexture anim;
     
     // Time related variables
     static const ms MIN_TIME_BETWEEN_ROCKS;
@@ -72,7 +104,7 @@ private:
     static const float PLAYER_FRICTION;
     static const float PLAYER_MIN_POS;
     static const float PLAYER_MAX_POS;
-    std::list<FallingRock> rocks;
+    std::list<FallingObject*> falling_objects;
     Rectangle player_hitbox;
     void CalculatePlayerHitbox();
     

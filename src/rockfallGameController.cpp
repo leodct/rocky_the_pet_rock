@@ -4,9 +4,11 @@
 // === GAME CONTROLLER CLASS ===
 // =============================
 
+const float RockfallGameController::MAX_BOMB_CHANCE     = 0.75f;
+const float RockfallGameController::MIN_BOMB_CHANCE     = 0.1f;
 const float RockfallGameController::MIN_ROCK_SIZE       = 0.1f;
 const float RockfallGameController::MAX_ROCK_SIZE       = 2.0f;
-const int   RockfallGameController::PLAYER_Y_POSITION   = 200;
+const int   RockfallGameController::PLAYER_Y_POSITION   = 300;
 const float RockfallGameController::PLAYER_ACCELERATION = 25;
 const int   RockfallGameController::PLAYER_MAX_SPEED    = 250;
 const float RockfallGameController::PLAYER_FRICTION     = 0.9f;
@@ -41,13 +43,12 @@ void RockfallGameController::CalculatePlayerHitbox()
     player_hitbox.y -= (player_texture.height / 2) * player_size;
 }
 
-RockfallGameController::RockfallGameController() : pause(false), playing(false), score(0), player_size(1.0f), player_position(10)
+RockfallGameController::RockfallGameController() : pause(false), playing(false), score(0), player_size(1.0f), bomb_chance(0), player_position(10)
 {
     ui      = new UIContainer();
     pauseui = new UIContainer();
     CalculatePlayerHitbox();
     LoadTextures();
-    anim = AnimatedTexture("rockfall_game/bomb_", 2, 5, true);
 }
 
 RockfallGameController::~RockfallGameController()
@@ -57,6 +58,10 @@ RockfallGameController::~RockfallGameController()
     for (auto &t : rock_textures)
     {
         UnloadTexture(t);
+    }
+    for (auto &o : falling_objects)
+    {
+        delete o;
     }
 }
 
@@ -79,10 +84,11 @@ void RockfallGameController::StartGame()
 {
     playing = true;
     camera.zoom   = 2.0f;
-    camera.target = {100, 100};
+    camera.target = {100, 200};
     last_rock   = std::chrono::steady_clock::now();
     time_to_next_rock = ms(2000);
-    anim.Initialize();
+    FallingObstacle::texture.Load("rockfall_game/bomb_", 2, 10, true);
+    FallingObstacle::texture.Initialize();
 }
 
 void RockfallGameController::EndGame()
@@ -130,9 +136,9 @@ void RockfallGameController::Draw() const
     // Draw background
     DrawTextureEx(background_texture, {0,0}, 0, 1, WHITE);
     // Draw rocks
-    for (auto &rock : rocks)
+    for (auto &obj : falling_objects)
     {
-        rock.Draw();
+        obj->Draw();
     }
     // Draw player
     DrawTexturePro(player_texture, {0,0,(float)player_texture.width,(float)player_texture.height}, player_hitbox, {0,0}, 0, WHITE);
@@ -140,15 +146,10 @@ void RockfallGameController::Draw() const
     ui->Draw();
     if (pause)
         pauseui->Draw();
-    
-    Transform2D at = {{100, 100}};
-    at.scale = 5.0f;
-    anim.Draw(at);
 }
 
 void RockfallGameController::Update()
 {
-    anim.Update();
     if (!pause && playing)
     {
         // ------------------------------------
@@ -180,52 +181,123 @@ void RockfallGameController::Update()
         {
             last_rock = std::chrono::steady_clock::now();
             time_to_next_rock = ms(rand() % (MAX_TIME_BETWEEN_ROCKS.count() - MIN_TIME_BETWEEN_ROCKS.count()) + MIN_TIME_BETWEEN_ROCKS.count());
-            rocks.push_front(FallingRock(true));
+
+            // Bomb spawning logic
+            bomb_chance = GetScore() / 1000.0 + MIN_BOMB_CHANCE;
+            if (bomb_chance > MAX_BOMB_CHANCE) bomb_chance = MAX_BOMB_CHANCE;
+
+            float roll = (rand() % 1000) / 1000.0;
+            if (roll > bomb_chance)
+            {
+                FallingRock* r = new FallingRock();
+                falling_objects.push_front(r);
+            }
+            else
+            {
+                FallingObstacle* o = new FallingObstacle();
+                falling_objects.push_front(o);
+            } 
         }
 
         CalculatePlayerHitbox();
         // --------------------------------------
         // --- SCORE CALCULATION THINGIEMAGIK ---
         // --------------------------------------
-        for (std::list<FallingRock>::iterator rock = rocks.begin(); rock != rocks.end(); ++rock)
+        for (std::list<FallingObject*>::iterator object = falling_objects.begin(); object != falling_objects.end(); ++object)
         {
-            bool rmrock = false;
-            rock->Update();
-            if (CheckCollisionCircleRec(rock->GetPosition(), rock_textures[0].width/2, player_hitbox))
+            bool rmobstacle = false;
+            (*object)->Update();
+            if (CheckCollisionCircleRec((*object)->GetPosition(), rock_textures[0].width/2, player_hitbox) && (*object)->GetValue() != value_bomb)
             {
-                unsigned char v = rock->GetValue() + 1;
+                unsigned char v = (*object)->GetValue() + 1;
                 score       += v;
                 player_size += v / 100.0f;
                 if (player_size > MAX_ROCK_SIZE)
                     player_size = MAX_ROCK_SIZE;
-                rmrock = true;
+                rmobstacle = true;
             }
-            else if (rock->GetPosition().y > (PLAYER_Y_POSITION + 50))
+            else if ((*object)->GetPosition().y > (PLAYER_Y_POSITION + 50))
             {
-                player_size -= 0.01;
-                rmrock = true;
-                //player_size -= rock->GetValue();
+                if ((*object)->GetValue() != value_bomb)
+                    player_size -= 0.01;
+
+                rmobstacle = true;
                 if (player_size < MIN_ROCK_SIZE)
                     player_size = MIN_ROCK_SIZE;
             }
 
-            if (rmrock)
-                rock = rocks.erase(rock);
+            if (rmobstacle)
+            {
+                delete (*object);
+                object = falling_objects.erase(object);
+            }
         }
     }
 }
 
+// ============================
+// === FALLING OBJECT CLASS ===
+// ============================
 
+
+const int          RockfallGameController::FallingObject::MIN_ROT_SPEED = -50;
+const int          RockfallGameController::FallingObject::MAX_ROT_SPEED =  50;
+const unsigned int RockfallGameController::FallingObject::MIN_FALL_SPEED = 30;
+const unsigned int RockfallGameController::FallingObject::MAX_FALL_SPEED = 50;
+
+void RockfallGameController::FallingObject::RandomizeValues()
+{
+    rotation       = (rand() % 36000) / 100.0f;
+    fall_speed     = rand() % (MAX_FALL_SPEED + MIN_FALL_SPEED) + MIN_FALL_SPEED;
+    rotation_speed = rand() % (MAX_ROT_SPEED + abs(MIN_ROT_SPEED)) + abs(MIN_ROT_SPEED);
+    position       = {float(rand() % int(PLAYER_MAX_POS) + PLAYER_MIN_POS / 2), 0};
+}
+
+RockfallGameController::FallingObject::FallingObject() : fall_speed(MIN_FALL_SPEED), rotation(0), rotation_speed(0), position({0,0}), value(value_default)
+{
+}
+
+Vector2 RockfallGameController::FallingObject::GetPosition() const
+{
+    return position;
+}
+
+unsigned char RockfallGameController::FallingObject::GetValue() const
+{
+    return value;
+}
+
+// ==============================
+// === FALLING OBSTACLE CLASS ===
+// ==============================
+
+AnimatedTexture RockfallGameController::FallingObstacle::texture = AnimatedTexture();
+
+RockfallGameController::FallingObstacle::FallingObstacle(bool random_values)
+{
+    if (random_values)
+    {
+        RandomizeValues();
+    }
+    value = value_bomb;
+}
+
+void RockfallGameController::FallingObstacle::Draw() const
+{
+    Transform2D t = {position, rotation, 1};
+    texture.Draw(t);
+}
+
+void RockfallGameController::FallingObstacle::Update()
+{
+    rotation   += rotation_speed * GetFrameTime();
+    position.y += fall_speed     * GetFrameTime();
+    texture.Update();
+}
 
 // ==========================
 // === FALLING ROCK CLASS ===
 // ==========================
-
-const int RockfallGameController::FallingRock::MIN_ROT_SPEED = -50;
-const int RockfallGameController::FallingRock::MAX_ROT_SPEED =  50;
-
-const unsigned int RockfallGameController::FallingRock::MIN_FALL_SPEED = 30;
-const unsigned int RockfallGameController::FallingRock::MAX_FALL_SPEED = 50;
 
 const Color RockfallGameController::FallingRock::DEFAULT_TINT = { 255, 255, 255, 255 };
 const Color RockfallGameController::FallingRock::RARE_TINT    = { 205, 100, 255, 255 };
@@ -234,38 +306,22 @@ const Color RockfallGameController::FallingRock::GOLDEN_TINT  = { 255, 235, 100,
 const float RockfallGameController::FallingRock::RARE_CHANCE   = 0.100f;
 const float RockfallGameController::FallingRock::GOLDEN_CHANCE = 0.025f;
 
-void RockfallGameController::FallingRock::RandomizeValues()
-{
-    texture_id     = rand() % rock_textures.size();
-    rotation       = (rand() % 36000) / 100.0f;
-    fall_speed     = rand() % (MAX_FALL_SPEED + MIN_FALL_SPEED) + MIN_FALL_SPEED;
-    rotation_speed = rand() % (MAX_ROT_SPEED + abs(MIN_ROT_SPEED)) + abs(MIN_ROT_SPEED);
-    position       = {float(rand() % int(PLAYER_MAX_POS) + PLAYER_MIN_POS / 2), 0};
-    float num = rand() % 10000 / 10000.0;
-        value = value_default;
-    if (num > GOLDEN_CHANCE && num < RARE_CHANCE)
-        value = value_rare;
-    else if (num < GOLDEN_CHANCE)
-        value = value_golden;
-}
 
-RockfallGameController::FallingRock::FallingRock(bool randomValues) : texture_id(0), rotation(0), fall_speed(MIN_FALL_SPEED), value(value_default), position(Vector2{0,0})
+RockfallGameController::FallingRock::FallingRock(bool randomValues) : texture_id(0)
 {
     if (randomValues)
     {    
         RandomizeValues();
+        texture_id     = rand() % rock_textures.size();
+        float num = rand() % 10000 / 10000.0;
+        value = value_default;
+        if (num > GOLDEN_CHANCE && num < RARE_CHANCE)
+            value = value_rare;
+        else if (num < GOLDEN_CHANCE)
+            value = value_golden;
     }
 }
 
-Vector2 RockfallGameController::FallingRock::GetPosition() const
-{
-    return position;
-}
-
-unsigned char RockfallGameController::FallingRock::GetValue() const
-{
-    return value;
-}
 
 void RockfallGameController::FallingRock::Draw() const
 {
@@ -285,6 +341,6 @@ void RockfallGameController::FallingRock::Draw() const
 
 void RockfallGameController::FallingRock::Update()
 {
-    position.y += fall_speed * GetFrameTime();
+    position.y += fall_speed     * GetFrameTime();
     rotation   += rotation_speed * GetFrameTime();
 }
