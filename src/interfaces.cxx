@@ -23,7 +23,8 @@ void InitMainUI()
     bottom_panel_transform.rotation = 0;
     bottom_panel_transform.scale    = 1;
     Color panel_col = {220, 220, 220, 250};
-    UI::Panel* buttons_panel = new UI::Panel(bottom_panel_transform, Vector2{WINDOW_SIZE.x, WINDOW_SIZE.y - (BUTTON_Y - 50)}, panel_col, panel_col, 5);
+    Color panel_edge_col = {200, 200, 200, 255};
+    UI::Panel* buttons_panel = new UI::Panel(bottom_panel_transform, Vector2{WINDOW_SIZE.x, WINDOW_SIZE.y - (BUTTON_Y - 50)}, panel_col, panel_edge_col, 5);
     buttons_panel->SetDrawOrder(-1);
     main_ui->AddElement("buttons_panel", buttons_panel);
     // -----------------
@@ -49,12 +50,32 @@ void InitMainUI()
     UI::Button* settings_btn = new UI::Button(LoadTexture((TEXTURES_PATH/"button_settings.png").u8string().c_str()), {Vector2{button_offset + button_spacing * 3, BUTTON_Y}, 0, 4});
     main_ui->AddElement("button_settings", settings_btn);
 
+
+
+
     // === TOP SIDE ===
+
     // --- Panel ---
     Transform2D top_panel_transform = {{0,0}, 0, 1};
-    UI::Panel *top_panel = new UI::Panel(top_panel_transform, Vector2{WINDOW_SIZE.x, 75}, panel_col, panel_col, 5);
+    UI::Panel *top_panel = new UI::Panel(top_panel_transform, Vector2{WINDOW_SIZE.x, 75}, panel_col, panel_edge_col, 5);
     top_panel->SetDrawOrder(-1);
     main_ui->AddElement("top_panel", top_panel);
+
+    // --- Money counter panel ---
+    Color money_panel_col = {200, 200, 200, 255};
+    Color money_panel_edge_col = {150, 150, 150, 255};
+    UI::Panel *money_panel = new UI::Panel({{250, 20}, 0, 1}, {100, 35}, money_panel_col, money_panel_edge_col, 5);
+    money_panel->SetDrawOrder(1);
+    main_ui->AddElement("balance_display_panel", money_panel);
+    // --- Money counter ---
+    Transform2D money_counter_transform = {{260, 40}, 0, 1};
+    UI::VariableDisplay<int> *balance_display = new UI::VariableDisplay<int>(&balance, money_counter_transform, 20, BLACK);
+    balance_display->SetDrawOrder(2);
+    main_ui->AddElement("balance_display", balance_display);
+    // --- Money icon ---
+    UI::ImageDisplay *icon_balance = new UI::ImageDisplay(LoadTexture((TEXTURES_PATH/"rock_token.png").u8string().c_str()), {{210, 15}, 0, 4});
+    icon_balance->SetDrawOrder(2);
+    main_ui->AddElement("icon_balance", icon_balance);
     
 }
 

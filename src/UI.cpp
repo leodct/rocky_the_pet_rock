@@ -409,3 +409,30 @@ void UI::Label::Draw() const
     }
     DrawTextPro(GetFontDefault(), text.c_str(), transform.position, origin, transform.rotation, text_size, spacing, text_col);
 }
+
+UI::ImageDisplay::ImageDisplay(Texture2D texture, Transform2D _transform) : image(texture)
+{
+    transform = _transform;
+    origin = {image.width / 2.0f, image.height / 2.0f};
+}
+
+UI::ImageDisplay::ImageDisplay(Texture2D texture, Transform2D _transform, Vector2 _origin) : image(texture), origin(_origin)
+{
+    transform = _transform;
+}
+
+UI::ImageDisplay::~ImageDisplay()
+{
+    UnloadTexture(image);
+}
+
+void UI::ImageDisplay::Draw() const
+{
+    Rectangle sourcerec = {0, 0, (float)image.width, (float)image.height};
+    Rectangle destrec   = {transform.position.x, transform.position.y, image.width * transform.scale, image.height * transform.scale};
+    DrawTexturePro(image, sourcerec, destrec, origin, transform.rotation, WHITE);
+}
+
+void UI::ImageDisplay::Update()
+{
+}

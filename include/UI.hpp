@@ -146,6 +146,22 @@ namespace UI
 
     };
 
+    // ---------------------------
+    // --- IMAGE DISPLAY CLASS ---
+    // ---------------------------
+    class ImageDisplay : public UIElement {
+    private:
+        Texture2D image;
+        Vector2   origin;
+    public:
+        ImageDisplay(Texture2D texture, Transform2D _transform = {});
+        ImageDisplay(Texture2D texture, Transform2D _transform, Vector2 _origin);
+        ~ImageDisplay();
+
+        void Draw() const override;
+        void Update() override;
+    };
+
     // ------------------------------
     // --- VARIABLE DISPLAY CLASS ---
     // ------------------------------
