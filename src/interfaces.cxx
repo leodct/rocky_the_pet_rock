@@ -1,5 +1,6 @@
 #include "interfaces.hxx"
 
+#define middle UI::Label::ALIGNMENT::MIDDLE
 
 UIContainer *main_ui = new UIContainer;
 void InitMainUI()
@@ -113,6 +114,7 @@ void InitGamesUI()
     // --- ROCKFALL GAME ---
     Transform2D button_rockfall_transform = {{100, 200}, 0, 4};
     UI::Button *button_rockfall = new UI::Button(LoadTexture((TEXTURES_PATH/"button_game_rockfall.png").u8string().c_str()), button_rockfall_transform);
+    button_rockfall->DefineOnPressCallback(StartRockfallGameCallback);
     games_ui->AddElement("button_rockfall", button_rockfall);
     
     Transform2D label_rockfall_transform = {{150, 200}, 0, 1};
@@ -135,11 +137,111 @@ void InitGamesUI()
     UI::Label *label_more_games = new UI::Label(label_more_games_transform, "More games coming soon...", 25, WHITE);
     games_ui->AddElement("label_more_games", label_more_games);
 
+    games_ui->SetAllVisibilityTo(false);
     games_ui->DisableAll();
+}
+
+UIContainer *rockfall_ui = new UIContainer;
+void InitRockfallGameUI(){
+    // ========================
+    // === ROCKFALL GAME UI ===
+    // ========================
+    Color panel_col = {220, 220, 220, 250};
+    Color panel_edge_col = {200, 200, 200, 255};
+    // --- Panel ---
+    Transform2D top_panel_transform = {{0,0}, 0, 1};
+    UI::Panel *top_panel = new UI::Panel(top_panel_transform, Vector2{WINDOW_SIZE.x, 75}, panel_col, panel_edge_col, 5);
+    top_panel->SetDrawOrder(-1);
+    rockfall_ui->AddElement("top_panel", top_panel);
+
+    //======================
+    // === MONEY COUNTER ===
+    // --- Money counter panel ---
+    Color money_panel_col = {200, 200, 200, 255};
+    Color money_panel_edge_col = {150, 150, 150, 255};
+    UI::Panel *money_panel = new UI::Panel({{250, 20}, 0, 1}, {100, 35}, money_panel_col, money_panel_edge_col, 5);
+    money_panel->SetDrawOrder(1);
+    rockfall_ui->AddElement("balance_display_panel", money_panel);
+    // --- Money counter ---
+    Transform2D money_counter_transform = {{260, 40}, 0, 1};
+    UI::VariableDisplay<int> *balance_display = new UI::VariableDisplay<int>(&balance, money_counter_transform, 20, BLACK);
+    balance_display->SetDrawOrder(2);
+    rockfall_ui->AddElement("balance_display", balance_display);
+    // --- Money icon ---
+    UI::ImageDisplay *icon_balance = new UI::ImageDisplay(LoadTexture((TEXTURES_PATH/"rock_token.png").u8string().c_str()), {{210, 15}, 0, 4});
+    icon_balance->SetDrawOrder(2);
+    rockfall_ui->AddElement("icon_balance", icon_balance);
+
+    // =====================
+    // === SCORE COUNTER ===
+    UI::Panel *score_panel = new UI::Panel({{95, 20}, 0, 1}, {100, 35}, money_panel_col, money_panel_edge_col, 5);
+    score_panel->SetDrawOrder(1);
+    rockfall_ui->AddElement("score_panel", score_panel);
+    UI::VariableDisplay<int> *score_display = new UI::VariableDisplay<int>(&RockfallGameController::GetScoreRef(), {{120, 40}, 0, 1}, 20, BLACK);
+    score_display->SetDrawOrder(2);
+    rockfall_ui->AddElement("score_display", score_display);
+    UI::ImageDisplay *score_image = new UI::ImageDisplay(LoadTexture((TEXTURES_PATH/"rockfall_game/rock_7.png").u8string().c_str()), {{75, 20}, 0, 3});
+    score_image->SetDrawOrder(2);
+    rockfall_ui->AddElement("score_image", score_image);
+
+    // --- Pause button ---
+    UI::Button *button_pause = new UI::Button(LoadTexture((TEXTURES_PATH/"button_return.png").u8string().c_str()), {{35, 35}, 0, 3});
+    button_pause->SetDrawOrder(2);
+    button_pause->DefineOnPressCallback(PauseRockfallCallback);
+    rockfall_ui->AddElement("button_pause", button_pause);
+}
+
+UIContainer *rockfall_pause_ui = new UIContainer;
+void InitRockfallPauseUI(){
+    // ==================
+    // === PAUSE MENU ===
+    // --- Panel ---
+    Color pause_panel_col      = { 245, 225, 210, 225 };
+    Color pause_panel_edge_col = { 245, 225, 210, 255 };
+    Transform2D pause_panel_transform = {{25, 100}, 0, 1};
+    UI::Panel *pause_panel = new UI::Panel(pause_panel_transform, {WINDOW_SIZE.x - pause_panel_transform.position.x * 2, WINDOW_SIZE.y - pause_panel_transform.position.y - pause_panel_transform.position.x}, pause_panel_col, pause_panel_edge_col, 5);
+    pause_panel->SetDrawOrder(-1);
+    rockfall_pause_ui->AddElement("pause_panel", pause_panel);
+    // --- Paused text --
+    UI::Label *label_paused = new UI::Label({{WINDOW_SIZE.x / 2, pause_panel_transform.position.y + 40}, 0, 1}, "- Game Paused -", 35, BLACK, middle);
+    rockfall_pause_ui->AddElement("label_paused", label_paused);
+    // --- Resume button ---
+    UI::Button *button_resume = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_green.png").u8string().c_str()), {{WINDOW_SIZE.x / 2, 225}, 0, 4});
+    button_resume->DefineOnPressCallback(ResumeRockfallGameCallback);
+    rockfall_pause_ui->AddElement("button_resume", button_resume);
+    // --- Resume button label ---
+    UI::Label *label_button_resume = new UI::Label(button_resume->GetTransform(), "Resume", 30, WHITE, middle);
+    label_button_resume->SetDrawOrder(1);
+    rockfall_pause_ui->AddElement("label_button_resume", label_button_resume);
+    // --- Restart button ---
+    UI::Button *button_restart = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_yellow.png").u8string().c_str()), {{WINDOW_SIZE.x / 2, 300}, 0, 4});
+    button_restart->DefineOnPressCallback(RestartRockfallCallback);
+    rockfall_pause_ui->AddElement("button_restrt", button_restart);
+    // --- Restart button label ---
+    UI::Label *label_button_restart = new UI::Label(button_restart->GetTransform(), "Restart", 30, WHITE, middle);
+    label_button_restart->SetDrawOrder(1);
+    rockfall_pause_ui->AddElement("label_button_restart", label_button_restart);
+    // --- Exit button ---
+    UI::Button *button_exit = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_red.png").u8string().c_str()), {{WINDOW_SIZE.x / 2, 375}, 0, 4});
+    button_exit->DefineOnPressCallback(ExitRockfallGameCallback);
+    rockfall_pause_ui->AddElement("button_exit", button_exit);
+    // --- Button exit label ---
+    UI::Label *label_button_exit = new UI::Label(button_exit->GetTransform(), "Exit", 30, WHITE, middle);
+    label_button_exit->SetDrawOrder(1);
+    rockfall_pause_ui->AddElement("label_button_exit", label_button_exit);
+}
+
+void InitRockfallUI(){
+    InitRockfallGameUI();
+    InitRockfallPauseUI();
+    rockfall_pause_ui->SetAllVisibilityTo(false);
+    rockfall_pause_ui->DisableAll();
+    rockfall_pause_ui->SetDrawOrder(1);
 }
 
 void InitUISystems()
 {
     InitMainUI();
     InitGamesUI();
+    InitRockfallUI();
 }

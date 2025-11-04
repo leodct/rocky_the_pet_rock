@@ -154,7 +154,7 @@ void UIContainer::EnableAll()
 {
     for (auto &element : elements)
     {
-        element.second->SetDisplayState(true);
+        element.second->Enable();
     }
 }
 
@@ -162,15 +162,7 @@ void UIContainer::DisableAll()
 {
     for (auto &element : elements)
     {
-        element.second->SetDisplayState(false);
-    }
-}
-
-void UIContainer::ToggleAll()
-{
-    for (auto &element : elements)
-    {
-        element.second->ToggleDisplayState();
+        element.second->Disable();
     }
 }
 
@@ -402,9 +394,10 @@ void UI::Label::Draw() const
             origin.x = 0;
             break;
         case ALIGNMENT::RIGHT:
-            origin.x = origin.x / 2;
+            origin.x = origin.x;
             break;
         default: // case ALIGNMENT::MIDDLE:
+            origin.x = origin.x / 2;
             break;
     }
     DrawTextPro(GetFontDefault(), text.c_str(), transform.position, origin, transform.rotation, text_size, spacing, text_col);

@@ -73,11 +73,11 @@ public:
     };
 private:
     // Main variables
-    bool  pause;
-    bool  playing;
-    int   score;
-    float player_size;
-    float bomb_chance;
+    static bool  pause;
+    static bool  playing;
+    static int   score;
+    static float player_size;
+    static float bomb_chance;
     static const float MAX_BOMB_CHANCE;
     static const float MIN_BOMB_CHANCE;
     static const float MIN_ROCK_SIZE;
@@ -88,46 +88,50 @@ private:
     static Texture2D player_texture;
     static std::vector<Texture2D> rock_textures;
     static Texture2D background_texture;
-    void   LoadTextures();
+    static void   LoadTextures();
     
     // Time related variables
     static const ms MIN_TIME_BETWEEN_ROCKS;
     static const ms MAX_TIME_BETWEEN_ROCKS;
-    std::chrono::steady_clock::duration   time_to_next_rock;
-    std::chrono::steady_clock::time_point last_rock;
+    static std::chrono::steady_clock::duration   time_to_next_rock;
+    static std::chrono::steady_clock::time_point last_rock;
     
     // Game related variables
-    float              player_position;
-    float              player_velocity;
+    static float       player_position;
+    static float       player_velocity;
     static const float PLAYER_ACCELERATION;
     static const int   PLAYER_MAX_SPEED;
     static const float PLAYER_FRICTION;
     static const float PLAYER_MIN_POS;
     static const float PLAYER_MAX_POS;
-    std::list<FallingObject*> falling_objects;
-    Rectangle player_hitbox;
-    void CalculatePlayerHitbox();
+    static std::list<FallingObject*> falling_objects;
+    static Rectangle player_hitbox;
+    static Rectangle player_draw_area;
+    static void CalculatePlayerHitbox();
     
     // Others
-    UIContainer *ui;
-    UIContainer *pauseui;
+    static UIContainer *ui;
+    static UIContainer *pauseui;
+    static void WipeData();
     public:
     RockfallGameController();
     ~RockfallGameController();
     
-    void Pause();
-    void UnPause();
-    void TogglePause();
-    void StartGame();
-    void EndGame();
+    static void Pause();
+    static void UnPause();
+    static void TogglePause();
+    static void RestartGame();
+    static void StartGame();
+    static void EndGame();
 
-    int   GetScore();
-    float GetPlayerSize();
-    float GetMaxRockSize();
-    float GetMinRockSize();
-    bool  GetPauseStatus() const;
-    Texture2D &GetPlayerTexture();
-    std::vector<Texture2D> &GetRockTextures();
+    static int   GetScore();
+    static int  &GetScoreRef();
+    static float GetPlayerSize();
+    static float GetMaxRockSize();
+    static float GetMinRockSize();
+    static bool  GetPauseStatus();
+    static Texture2D &GetPlayerTexture();
+    static std::vector<Texture2D> &GetRockTextures();
 
     void Draw() const override;
     void Update() override;

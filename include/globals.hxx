@@ -21,6 +21,9 @@ extern Camera2D camera;
 extern bool closeGame;
 extern bool mouse_over_button;
 extern int  balance;
+class  SceneManager;
+extern SceneManager scene_manager;
+
 
 // Settings
 struct Settings{

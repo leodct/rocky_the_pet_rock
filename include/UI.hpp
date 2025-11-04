@@ -58,7 +58,6 @@ public:
 
     void EnableAll();
     void DisableAll();
-    void ToggleAll();
     void SetAllVisibilityTo(bool value);
 };
 

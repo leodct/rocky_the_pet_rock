@@ -1,4 +1,5 @@
 #include "globals.hxx"
+#include "scene.hpp"
 
 Camera2D  camera                          = {};
 Texture2D background_texture              = {};
@@ -8,6 +9,7 @@ bool closeGame                            = false;
 bool mouse_over_button                    = false;
 bool highlight_rock                       = true;
 int  balance                              = 0;
+SceneManager scene_manager;
 
 void DrawBackground(bool tiled, Camera2D camera)
 {

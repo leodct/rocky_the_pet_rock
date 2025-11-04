@@ -168,6 +168,7 @@ void SceneManager::LoadScene(std::string scene_id)
     if (it == scenes.end())
     {
         activeScene = &emptyScene;
+        std::cerr << "Error! Empty scene loaded!" << std::endl;
     }
     else
     {

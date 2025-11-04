@@ -40,9 +40,10 @@ int main(){
 
     Scene *scene_rockfall_game = new Scene;
     RockfallGameController *rf_game_controller = new RockfallGameController();
+    scene_rockfall_game->AddUi("rockfall_ui", rockfall_ui);
+    scene_rockfall_game->AddUi("rockfall_pause_ui", rockfall_pause_ui);
     scene_rockfall_game->AddObject("game_controller", rf_game_controller);
 
-    SceneManager scene_manager;
     scene_manager.AddScene("main_scene", main_scene);
     scene_manager.AddScene("rockfall_game", scene_rockfall_game);
     scene_manager.LoadScene("main_scene");
