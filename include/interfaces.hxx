@@ -9,6 +9,7 @@ extern UIContainer* main_ui;
 extern UIContainer* games_ui;
 extern UIContainer* rockfall_ui;
 extern UIContainer* rockfall_pause_ui;
+extern UIContainer* rockfall_game_over_ui;
 
 void InitUISystems();
 #endif

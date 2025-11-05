@@ -23,6 +23,7 @@ extern bool mouse_over_button;
 extern int  balance;
 class  SceneManager;
 extern SceneManager scene_manager;
+extern int rockfall_high_score;
 
 
 // Settings

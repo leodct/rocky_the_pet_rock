@@ -1,4 +1,5 @@
 #include "rockfallGameController.hpp"
+#include "interfaces.hxx"
 
 // =============================
 // === GAME CONTROLLER CLASS ===
@@ -17,6 +18,7 @@ const float RockfallGameController::PLAYER_MAX_POS      = 170;
 
 bool      RockfallGameController::pause;
 bool      RockfallGameController::playing;
+bool      RockfallGameController::game_over;
 int       RockfallGameController::score;
 float     RockfallGameController::player_size;
 float     RockfallGameController::bomb_chance;
@@ -24,9 +26,6 @@ float     RockfallGameController::player_position;
 float     RockfallGameController::player_velocity;
 Rectangle RockfallGameController::player_hitbox;
 Rectangle RockfallGameController::player_draw_area;
-
-UIContainer *RockfallGameController::ui;
-UIContainer *RockfallGameController::pauseui;
 
 std::list<RockfallGameController::FallingObject*> RockfallGameController::falling_objects;
 std::chrono::steady_clock::duration   RockfallGameController::time_to_next_rock;
@@ -77,18 +76,17 @@ void RockfallGameController::WipeData()
     falling_objects.clear();
     pause           = false;
     playing         = false;
+    game_over       = false;
     score           = 0;
     player_size     = 1.0f;
     bomb_chance     = 0.0f;
-    player_position = 10;
+    player_position = (PLAYER_MAX_POS - PLAYER_MIN_POS) / 2;
     CalculatePlayerHitbox();
 }
 
 RockfallGameController::RockfallGameController()
 {
     WipeData();
-    ui      = new UIContainer();
-    pauseui = new UIContainer();
     CalculatePlayerHitbox();
     LoadTextures();
 }
@@ -96,8 +94,6 @@ RockfallGameController::RockfallGameController()
 RockfallGameController::~RockfallGameController()
 {
     WipeData();
-    delete ui;
-    delete pauseui;
     for (auto &t : rock_textures)
     {
         UnloadTexture(t);
@@ -127,20 +123,17 @@ void RockfallGameController::RestartGame()
 
 void RockfallGameController::StartGame()
 {
-    playing = true;
-    pause   = false;
-    camera.zoom   = 2.0f;
-    camera.target = {100, 200};
-    last_rock   = std::chrono::steady_clock::now();
+    playing           = true;
+    pause             = false;
+    game_over         = false;
+    camera.zoom       = 2.0f;
+    camera.target     = {100, 200};
+    last_rock         = std::chrono::steady_clock::now();
     time_to_next_rock = ms(2000);
     if (!FallingObstacle::texture.IsInitialized()){
         FallingObstacle::texture.Load("rockfall_game/bomb_", 2, 10, true);
         FallingObstacle::texture.Initialize();
     }
-    ui->EnableAll();
-    ui->SetAllVisibilityTo(true);
-    pauseui->DisableAll();
-    pauseui->SetAllVisibilityTo(false);
 }
 
 void RockfallGameController::EndGame()
@@ -148,10 +141,6 @@ void RockfallGameController::EndGame()
     playing = false;
     camera.target   = {0,0};
     camera.zoom     = 5.0f;
-    ui->DisableAll();
-    ui->SetAllVisibilityTo(false);
-    pauseui->DisableAll();
-    pauseui->SetAllVisibilityTo(false);
 }
 
 int RockfallGameController::GetScore()
@@ -184,6 +173,11 @@ bool RockfallGameController::GetPauseStatus()
     return pause;
 }
 
+bool RockfallGameController::IsGameOver()
+{
+    return game_over;
+}
+
 Texture2D &RockfallGameController::GetPlayerTexture()
 {
     return player_texture;
@@ -208,14 +202,16 @@ void RockfallGameController::Draw() const
     //DrawRectangleLinesEx(player_hitbox, 1, RED);
     //DrawCircle(player_position, PLAYER_Y_POSITION, 2, PINK);
 
-    ui->Draw();
-    if (pause)
-        pauseui->Draw();
+    if (game_over)
+    {
+        rockfall_game_over_ui->EnableAll();
+        rockfall_game_over_ui->SetAllVisibilityTo(true);
+    }
 }
 
 void RockfallGameController::Update()
 {
-    if (!pause && playing)
+    if (!pause && playing && !game_over)
     {
         // ------------------------------------
         // --- PLAYER MOVEMENT THINGIEMAGIK ---
@@ -272,20 +268,21 @@ void RockfallGameController::Update()
         {
             bool rmobstacle = false;
             (*object)->Update();
-            if (CheckCollisionCircleRec((*object)->GetPosition(), rock_textures[0].width/2, player_hitbox) && (*object)->GetValue() != value_bomb)
+            if (CheckCollisionCircleRec((*object)->GetPosition(), rock_textures[0].width/2, player_hitbox))
             {
                 switch ((*object)->GetValue())
                 {
                     case value_default:
                         break;
                     case value_bomb:
-                        // End game logic here (?)
+                        if (score > rockfall_high_score) rockfall_high_score = score;
+                        game_over = true;
                         break;
                     case value_rare:
                         balance += 5;
                         break;
                     case value_golden:
-                        balance += 15;
+                        balance += 10;
                         break;
                     default:
                         break;
@@ -298,7 +295,7 @@ void RockfallGameController::Update()
                     player_size = MAX_ROCK_SIZE;
                 rmobstacle = true;
             }
-            else if ((*object)->GetPosition().y > (PLAYER_Y_POSITION + 50))
+            else if ((*object)->GetPosition().y > (PLAYER_Y_POSITION + 75))
             {
                 if ((*object)->GetValue() != value_bomb)
                     player_size -= 0.01;
@@ -320,8 +317,6 @@ void RockfallGameController::Update()
 // ============================
 // === FALLING OBJECT CLASS ===
 // ============================
-
-
 const int          RockfallGameController::FallingObject::MIN_ROT_SPEED = -50;
 const int          RockfallGameController::FallingObject::MAX_ROT_SPEED =  50;
 const unsigned int RockfallGameController::FallingObject::MIN_FALL_SPEED = 30;

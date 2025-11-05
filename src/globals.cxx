@@ -9,6 +9,7 @@ bool closeGame                            = false;
 bool mouse_over_button                    = false;
 bool highlight_rock                       = true;
 int  balance                              = 0;
+int  rockfall_high_score                  = 0;
 SceneManager scene_manager;
 
 void DrawBackground(bool tiled, Camera2D camera)

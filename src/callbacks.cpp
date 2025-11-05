@@ -47,6 +47,8 @@ void RestartRockfallCallback()
     RockfallGameController::RestartGame();
     rockfall_pause_ui->DisableAll();
     rockfall_pause_ui->SetAllVisibilityTo(false);
+    rockfall_game_over_ui->DisableAll();
+    rockfall_game_over_ui->SetAllVisibilityTo(false);
     rockfall_ui->EnableAll();
 }
 
@@ -56,13 +58,18 @@ void ExitRockfallGameCallback()
     rockfall_pause_ui->DisableAll();
     rockfall_ui->DisableAll();
     scene_manager.LoadScene("main_scene");
+    main_ui->GetElement("button_exit")->Enable();
 }
 
 void StartRockfallGameCallback()
 {
+    games_ui->DisableAll();
+    games_ui->SetAllVisibilityTo(false);
     scene_manager.LoadScene("rockfall_game");
     RockfallGameController::StartGame();
     rockfall_pause_ui->DisableAll();
     rockfall_pause_ui->SetAllVisibilityTo(false);
+    rockfall_game_over_ui->DisableAll();
+    rockfall_game_over_ui->SetAllVisibilityTo(false);
     rockfall_ui->EnableAll();
 }

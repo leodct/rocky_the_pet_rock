@@ -231,12 +231,69 @@ void InitRockfallPauseUI(){
     rockfall_pause_ui->AddElement("label_button_exit", label_button_exit);
 }
 
+UIContainer *rockfall_game_over_ui = new UIContainer;
+void InitRockfallGameOverUI(){
+    // ======================
+    // === GAME OVER MENU ===
+    // --- Panel ---
+    Color pause_panel_col      = { 245, 225, 210, 225 };
+    Color pause_panel_edge_col = { 245, 225, 210, 255 };
+    Transform2D pause_panel_transform = {{25, 100}, 0, 1};
+    UI::Panel *pause_panel = new UI::Panel(pause_panel_transform, {WINDOW_SIZE.x - pause_panel_transform.position.x * 2, WINDOW_SIZE.y - pause_panel_transform.position.y - pause_panel_transform.position.x}, pause_panel_col, pause_panel_edge_col, 5);
+    pause_panel->SetDrawOrder(-1);
+    rockfall_game_over_ui->AddElement("pause_panel", pause_panel);
+    
+    // --- Score label ---
+    int score_font_size = 25;
+    std::string score_text = "Score: ";
+    Transform2D score_transform = {{WINDOW_SIZE.x / 2 + (MeasureTextEx(GetFontDefault(), score_text.c_str(), score_font_size, 1).x) / 2, WINDOW_SIZE.y / 3.15f}, 0, 1};
+    UI::Label *label_score = new UI::Label(score_transform, score_text.c_str(), score_font_size, BLACK, UI::Label::ALIGNMENT::RIGHT);
+    rockfall_game_over_ui->AddElement("label_score", label_score);
+    // --- Score display ---
+    UI::VariableDisplay<int> *score_display = new UI::VariableDisplay<int>(&RockfallGameController::GetScoreRef(), score_transform, score_font_size, BLACK, UI::Label::ALIGNMENT::LEFT);
+    rockfall_game_over_ui->AddElement("score_display", score_display);
+    // --- High score label ---
+    int high_score_font_size = 20;
+    std::string high_score_text = "All time best: ";
+    Transform2D high_score_transform = {{WINDOW_SIZE.x / 2 + (MeasureTextEx(GetFontDefault(), high_score_text.c_str(), high_score_font_size, 1).x / 2), WINDOW_SIZE.y / 2.75f}, 0, 1};
+    UI::Label *label_high_score = new UI::Label(high_score_transform, high_score_text.c_str(), high_score_font_size, BLACK, UI::Label::ALIGNMENT::RIGHT);
+    rockfall_game_over_ui->AddElement("label_high_score", label_high_score);
+    // --- High score display ---
+    UI::VariableDisplay<int> *high_score_display = new UI::VariableDisplay<int>(&rockfall_high_score, high_score_transform, high_score_font_size, BLACK, UI::Label::ALIGNMENT::LEFT);
+    rockfall_game_over_ui->AddElement("high_score_display", high_score_display);
+
+
+    // --- Paused text --
+    UI::Label *label_paused = new UI::Label({{WINDOW_SIZE.x / 2, pause_panel_transform.position.y + 40}, 0, 1}, "- Game Over -", 35, BLACK, middle);
+    rockfall_game_over_ui->AddElement("label_paused", label_paused);
+    // --- Restart button ---
+    UI::Button *button_restart = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_yellow.png").u8string().c_str()), {{WINDOW_SIZE.x / 2, 300}, 0, 4});
+    button_restart->DefineOnPressCallback(RestartRockfallCallback);
+    rockfall_game_over_ui->AddElement("button_restrt", button_restart);
+    // --- Restart button label ---
+    UI::Label *label_button_restart = new UI::Label(button_restart->GetTransform(), "Restart", 30, WHITE, middle);
+    label_button_restart->SetDrawOrder(1);
+    rockfall_game_over_ui->AddElement("label_button_restart", label_button_restart);
+    // --- Exit button ---
+    UI::Button *button_exit = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_red.png").u8string().c_str()), {{WINDOW_SIZE.x / 2, 375}, 0, 4});
+    button_exit->DefineOnPressCallback(ExitRockfallGameCallback);
+    rockfall_game_over_ui->AddElement("button_exit", button_exit);
+    // --- Button exit label ---
+    UI::Label *label_button_exit = new UI::Label(button_exit->GetTransform(), "Exit", 30, WHITE, middle);
+    label_button_exit->SetDrawOrder(1);
+    rockfall_game_over_ui->AddElement("label_button_exit", label_button_exit);
+}
+
 void InitRockfallUI(){
     InitRockfallGameUI();
     InitRockfallPauseUI();
     rockfall_pause_ui->SetAllVisibilityTo(false);
     rockfall_pause_ui->DisableAll();
     rockfall_pause_ui->SetDrawOrder(1);
+    InitRockfallGameOverUI();
+    rockfall_game_over_ui->SetAllVisibilityTo(false);
+    rockfall_game_over_ui->DisableAll();
+    rockfall_game_over_ui->SetDrawOrder(1);
 }
 
 void InitUISystems()

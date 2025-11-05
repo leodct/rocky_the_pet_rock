@@ -74,6 +74,7 @@ public:
 private:
     // Main variables
     static bool  pause;
+    static bool  game_over;
     static bool  playing;
     static int   score;
     static float player_size;
@@ -110,8 +111,6 @@ private:
     static void CalculatePlayerHitbox();
     
     // Others
-    static UIContainer *ui;
-    static UIContainer *pauseui;
     static void WipeData();
     public:
     RockfallGameController();
@@ -130,6 +129,7 @@ private:
     static float GetMaxRockSize();
     static float GetMinRockSize();
     static bool  GetPauseStatus();
+    static bool  IsGameOver();
     static Texture2D &GetPlayerTexture();
     static std::vector<Texture2D> &GetRockTextures();
 
