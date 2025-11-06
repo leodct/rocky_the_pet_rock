@@ -123,11 +123,11 @@ void InitGamesUI()
 
     // ------------------------
     // --- ROCK FINDER GAME ---
-    Transform2D button_finder_transform = {{100, 300}, 0, 4};
-   // UI::Button *button_rock_finder = new UI::Button(LoadTexture((TEXTURES_PATH/"button_game_rock_finder.png").u8string().c_str()), button_finder_transform);
+    //Transform2D button_finder_transform = {{100, 300}, 0, 4};
+    //UI::Button *button_rock_finder = new UI::Button(LoadTexture((TEXTURES_PATH/"button_game_rock_finder.png").u8string().c_str()), button_finder_transform);
     //games_ui->AddElement("button_rock_finder", button_rock_finder);
 
-    Transform2D label_finder_transform = {{150, 300}, 0, 1};
+    //Transform2D label_finder_transform = {{150, 300}, 0, 1};
     //UI::Label *label_rock_finder = new UI::Label(label_finder_transform, "Rock finder", 30, WHITE);
     //games_ui->AddElement("label_rock_finder", label_rock_finder);
 
@@ -299,7 +299,7 @@ void InitOutOfTimeMenu(){
     UI::Label *label_notime = new UI::Label({{WINDOW_SIZE.x / 2 - 100, WINDOW_SIZE.y / 2}, 0, 1}, "Coming Soon...", 40, BLACK);
     out_of_time_menu->AddElement("label_notime", label_notime);
 
-    UI::Label *label_notime2 = new UI::Label({{WINDOW_SIZE.x / 2 - 100, WINDOW_SIZE.y / 1.8}, 0, 1}, "(I ran out of time)", 25, BLACK);
+    UI::Label *label_notime2 = new UI::Label({{WINDOW_SIZE.x / 2 - 100, WINDOW_SIZE.y / 1.8f}, 0, 1}, "(I ran out of time)", 25, BLACK);
     out_of_time_menu->AddElement("label_notime2", label_notime2);
 
     UI::Button *button_awman = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_green.png").u8string().c_str()), {{WINDOW_SIZE.x / 2, WINDOW_SIZE.y / 1.5f}, 0, 4});

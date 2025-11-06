@@ -79,10 +79,12 @@ void IRanOutOfTimeCallback()
 {
     out_of_time_menu->EnableAll();
     out_of_time_menu->SetAllVisibilityTo(true);
+    main_ui->DisableAll();
 }
 
 void CloseOutOfTimeMenuCallback()
 {
     out_of_time_menu->DisableAll();
     out_of_time_menu->SetAllVisibilityTo(false);
+    main_ui->EnableAll();
 }
