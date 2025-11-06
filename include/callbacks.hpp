@@ -16,4 +16,7 @@ void RestartRockfallCallback();
 void ExitRockfallGameCallback();
 void StartRockfallGameCallback();
 
+void IRanOutOfTimeCallback();
+void CloseOutOfTimeMenuCallback();
+
 #endif

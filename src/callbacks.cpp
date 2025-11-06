@@ -7,6 +7,7 @@ void ExitCallback()
 
 void DefaultCallback()
 {
+    IRanOutOfTimeCallback();
     std::cout << "Default button callback!" << std::endl;
 }
 
@@ -72,4 +73,16 @@ void StartRockfallGameCallback()
     rockfall_game_over_ui->DisableAll();
     rockfall_game_over_ui->SetAllVisibilityTo(false);
     rockfall_ui->EnableAll();
+}
+
+void IRanOutOfTimeCallback()
+{
+    out_of_time_menu->EnableAll();
+    out_of_time_menu->SetAllVisibilityTo(true);
+}
+
+void CloseOutOfTimeMenuCallback()
+{
+    out_of_time_menu->DisableAll();
+    out_of_time_menu->SetAllVisibilityTo(false);
 }

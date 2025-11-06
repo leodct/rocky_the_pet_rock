@@ -19,6 +19,7 @@ int main(){
     SetWindowIcon(img);
     UnloadImage(img);
     InitUISystems();
+    SetExitKey(KEY_NULL);
 
     // Resource loading
     LoadCosmetics();
@@ -37,6 +38,7 @@ int main(){
     main_scene->AddUi("main_ui", main_ui);
     main_scene->AddUi("games_ui", games_ui);
     main_scene->AddObject("rock", rock);
+    main_scene->AddUi("ootimeui", out_of_time_menu);
 
     Scene *scene_rockfall_game = new Scene;
     RockfallGameController *rf_game_controller = new RockfallGameController();
@@ -60,6 +62,7 @@ int main(){
         // --- Drawing logic ---
         scene_manager.Draw();
     }
+
 
     return 0;
 }

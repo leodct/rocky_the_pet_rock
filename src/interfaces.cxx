@@ -124,12 +124,12 @@ void InitGamesUI()
     // ------------------------
     // --- ROCK FINDER GAME ---
     Transform2D button_finder_transform = {{100, 300}, 0, 4};
-    UI::Button *button_rock_finder = new UI::Button(LoadTexture((TEXTURES_PATH/"button_game_rock_finder.png").u8string().c_str()), button_finder_transform);
-    games_ui->AddElement("button_rock_finder", button_rock_finder);
+   // UI::Button *button_rock_finder = new UI::Button(LoadTexture((TEXTURES_PATH/"button_game_rock_finder.png").u8string().c_str()), button_finder_transform);
+    //games_ui->AddElement("button_rock_finder", button_rock_finder);
 
     Transform2D label_finder_transform = {{150, 300}, 0, 1};
-    UI::Label *label_rock_finder = new UI::Label(label_finder_transform, "Rock finder", 30, WHITE);
-    games_ui->AddElement("label_rock_finder", label_rock_finder);
+    //UI::Label *label_rock_finder = new UI::Label(label_finder_transform, "Rock finder", 30, WHITE);
+    //games_ui->AddElement("label_rock_finder", label_rock_finder);
 
     // ------------------------------------
     // --- MORE GAMES COMING SOON LABEL ---
@@ -284,6 +284,36 @@ void InitRockfallGameOverUI(){
     rockfall_game_over_ui->AddElement("label_button_exit", label_button_exit);
 }
 
+UIContainer *out_of_time_menu = new UIContainer;
+void InitOutOfTimeMenu(){
+    // ======================
+    // === GAME OVER MENU ===
+    // --- Panel ---
+    Color panel_col      = { 245, 225, 210, 225 };
+    Color panel_edge_col = { 245, 225, 210, 255 };
+    Transform2D panel_transform = {{WINDOW_SIZE.x / 10, WINDOW_SIZE.y / 5}, 0, 1};
+    UI::Panel *panel = new UI::Panel(panel_transform, {WINDOW_SIZE.x - panel_transform.position.x * 2, WINDOW_SIZE.y - panel_transform.position.y - panel_transform.position.x}, panel_col, panel_edge_col, 5);
+    panel->SetDrawOrder(-1);
+    out_of_time_menu->AddElement("panel", panel);
+
+    UI::Label *label_notime = new UI::Label({{WINDOW_SIZE.x / 2 - 100, WINDOW_SIZE.y / 2}, 0, 1}, "Coming Soon...", 40, BLACK);
+    out_of_time_menu->AddElement("label_notime", label_notime);
+
+    UI::Label *label_notime2 = new UI::Label({{WINDOW_SIZE.x / 2 - 100, WINDOW_SIZE.y / 1.8}, 0, 1}, "(I ran out of time)", 25, BLACK);
+    out_of_time_menu->AddElement("label_notime2", label_notime2);
+
+    UI::Button *button_awman = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_green.png").u8string().c_str()), {{WINDOW_SIZE.x / 2, WINDOW_SIZE.y / 1.5f}, 0, 4});
+    button_awman->DefineOnPressCallback(CloseOutOfTimeMenuCallback);
+    out_of_time_menu->AddElement("button_awman", button_awman);
+
+    UI::Label *label_awman = new UI::Label({{WINDOW_SIZE.x / 2 - 50, WINDOW_SIZE.y / 1.5f}, 0, 1}, "aw man", 30, BLACK);
+    out_of_time_menu->AddElement("label_awman", label_awman);  
+
+    out_of_time_menu->SetDrawOrder(5); 
+    out_of_time_menu->DisableAll();
+    out_of_time_menu->SetAllVisibilityTo(false);
+}
+
 void InitRockfallUI(){
     InitRockfallGameUI();
     InitRockfallPauseUI();
@@ -301,4 +331,5 @@ void InitUISystems()
     InitMainUI();
     InitGamesUI();
     InitRockfallUI();
+    InitOutOfTimeMenu();
 }
