@@ -39,6 +39,7 @@ int main(){
     main_scene->AddUi("games_ui", games_ui);
     main_scene->AddObject("rock", rock);
     main_scene->AddUi("ootimeui", out_of_time_menu);
+    main_scene->AddUi("cosmetics_ui", cosmetics_selection_menu);
 
     Scene *scene_rockfall_game = new Scene;
     RockfallGameController *rf_game_controller = new RockfallGameController();

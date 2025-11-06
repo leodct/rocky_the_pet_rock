@@ -11,6 +11,7 @@ extern UIContainer* rockfall_ui;
 extern UIContainer* rockfall_pause_ui;
 extern UIContainer* rockfall_game_over_ui;
 extern UIContainer* out_of_time_menu;
+extern UIContainer* cosmetics_selection_menu;
 
 void InitUISystems();
 #endif

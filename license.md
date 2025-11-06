@@ -1,0 +1,1 @@
+You may not distribute this software under any circumstances. This source code is merely a tech demonstration for educational purposes

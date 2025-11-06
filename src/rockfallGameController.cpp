@@ -211,6 +211,15 @@ void RockfallGameController::Draw() const
 
 void RockfallGameController::Update()
 {
+    // ---------------------------------------------
+    // --- PAUSE/RESUME WITH HOTKEY THINGIEMAGIK ---
+    // ---------------------------------------------
+    if (IsKeyPressed(KEY_ESCAPE) && !game_over)
+    {
+        pause = !pause;
+        pause ? PauseRockfallCallback() : ResumeRockfallGameCallback();
+    }
+
     if (!pause && playing && !game_over)
     {
         // ------------------------------------

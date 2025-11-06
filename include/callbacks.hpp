@@ -7,8 +7,6 @@
 
 void ExitCallback();
 void DefaultCallback();
-void OpenGameSelectionCallback();
-void CloseGameSelectionCallback();
 // Rockfall
 void PauseRockfallCallback();
 void ResumeRockfallGameCallback();
@@ -16,7 +14,15 @@ void RestartRockfallCallback();
 void ExitRockfallGameCallback();
 void StartRockfallGameCallback();
 
+// --- UI Systems ---
+// Coming soon
 void IRanOutOfTimeCallback();
 void CloseOutOfTimeMenuCallback();
+// Cosmetics menu
+void OpenCosmeticsMenuCallback();
+void CloseCosmeticsMenuCallback();
+// Minigame selection menu
+void OpenGameSelectionCallback();
+void CloseGameSelectionCallback();
 
 #endif

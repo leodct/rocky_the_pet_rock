@@ -88,3 +88,19 @@ void CloseOutOfTimeMenuCallback()
     out_of_time_menu->SetAllVisibilityTo(false);
     main_ui->EnableAll();
 }
+
+void OpenCosmeticsMenuCallback()
+{
+    main_ui->DisableAll();
+    cosmetics_selection_menu->EnableAll();
+    cosmetics_selection_menu->SetAllVisibilityTo(true);
+    highlight_rock = false;
+}
+
+void CloseCosmeticsMenuCallback()
+{
+    main_ui->EnableAll();
+    cosmetics_selection_menu->DisableAll();
+    cosmetics_selection_menu->SetAllVisibilityTo(false);
+    highlight_rock = true;
+}

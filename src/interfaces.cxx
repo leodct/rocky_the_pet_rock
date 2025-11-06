@@ -40,6 +40,7 @@ void InitMainUI()
     // -----------------
     // Cosmetics button
     UI::Button* cosmetics_btn = new UI::Button(LoadTexture((TEXTURES_PATH/"button_cosmetics.png").u8string().c_str()), {Vector2{button_offset + button_spacing * 1, BUTTON_Y}, 0, 4});
+    cosmetics_btn->DefineOnPressCallback(OpenCosmeticsMenuCallback);
     main_ui->AddElement("button_cosmetics", cosmetics_btn);
     // -----------------
     // Games button
@@ -314,6 +315,30 @@ void InitOutOfTimeMenu(){
     out_of_time_menu->SetAllVisibilityTo(false);
 }
 
+UIContainer *cosmetics_selection_menu = new UIContainer;
+void InitCosmeticsMenu(){
+    // PANEL
+    Transform2D panel_transform  = {{20, 100}, 0, 1};
+    Vector2     panel_dimensions = {WINDOW_SIZE.x - 2*panel_transform.position.x, WINDOW_SIZE.y - 2*panel_transform.position.y - 40};
+    Color       panel_col        = { 200, 225, 210, 230 };
+    Color       panel_edge_col   = { 180, 205, 190, 255 };
+    UI::Panel  *panel            = new UI::Panel(panel_transform, panel_dimensions, panel_col, panel_edge_col, 5);
+    panel->SetDrawOrder(-1);
+    cosmetics_selection_menu->AddElement("panel", panel);
+    // RETURN BUTTON
+    Transform2D button_return_transform = {{35, 115}, 0, 3};
+    UI::Button *button_return    = new UI::Button(LoadTexture((TEXTURES_PATH/"button_return.png").u8string().c_str()), button_return_transform);
+    button_return->DefineOnPressCallback(CloseCosmeticsMenuCallback);
+    cosmetics_selection_menu->AddElement("button_return", button_return);
+    // COSMETICS LABEL
+    UI::Label *label_cosmetics = new UI::Label({{WINDOW_SIZE.x / 2, WINDOW_SIZE.y / 4}, 0, 1}, "- Cosmetics -", 40, BLACK, middle);
+    cosmetics_selection_menu->AddElement("label_cosmetics", label_cosmetics);
+    
+    cosmetics_selection_menu->SetAllVisibilityTo(false);
+    cosmetics_selection_menu->DisableAll();
+    cosmetics_selection_menu->SetDrawOrder(1);
+}
+
 void InitRockfallUI(){
     InitRockfallGameUI();
     InitRockfallPauseUI();
@@ -332,4 +357,5 @@ void InitUISystems()
     InitGamesUI();
     InitRockfallUI();
     InitOutOfTimeMenu();
+    InitCosmeticsMenu();
 }
