@@ -115,14 +115,9 @@ void RockfallGameController::TogglePause()
     pause = !pause;
 }
 
-void RockfallGameController::RestartGame()
-{
-    WipeData();
-    StartGame();
-}
-
 void RockfallGameController::StartGame()
 {
+    WipeData();
     playing           = true;
     pause             = false;
     game_over         = false;

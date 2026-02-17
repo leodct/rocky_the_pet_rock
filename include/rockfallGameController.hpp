@@ -119,7 +119,6 @@ private:
     static void Pause();
     static void UnPause();
     static void TogglePause();
-    static void RestartGame();
     static void StartGame();
     static void EndGame();
 

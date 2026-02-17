@@ -45,7 +45,7 @@ void ResumeRockfallGameCallback()
 
 void RestartRockfallCallback()
 {
-    RockfallGameController::RestartGame();
+    RockfallGameController::StartGame();
     rockfall_pause_ui->DisableAll();
     rockfall_pause_ui->SetAllVisibilityTo(false);
     rockfall_game_over_ui->DisableAll();
