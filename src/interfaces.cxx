@@ -30,26 +30,26 @@ void InitMainUI()
     main_ui->AddElement("buttons_panel", buttons_panel);
     // -----------------
     // Exit button
-    UI::Button* exit_btn =  new UI::Button(LoadTexture((TEXTURES_PATH/"button_exit.png").u8string().c_str()), {Vector2{35, 35}, 0, 3});
+    UI::Button* exit_btn =  new UI::Button(LoadTexture((TEXTURES_PATH/"button_exit.png").string().c_str()), {Vector2{35, 35}, 0, 3});
     exit_btn->DefineOnPressCallback(ExitCallback);
     main_ui->AddElement("button_exit", exit_btn);
     // -----------------
     // Shop button
-    UI::Button* shop_btn = new UI::Button(LoadTexture((TEXTURES_PATH/"button_shop.png").u8string().c_str()), {Vector2{button_offset, BUTTON_Y}, 0, 4});
+    UI::Button* shop_btn = new UI::Button(LoadTexture((TEXTURES_PATH/"button_shop.png").string().c_str()), {Vector2{button_offset, BUTTON_Y}, 0, 4});
     main_ui->AddElement("button_shop", shop_btn);
     // -----------------
     // Cosmetics button
-    UI::Button* cosmetics_btn = new UI::Button(LoadTexture((TEXTURES_PATH/"button_cosmetics.png").u8string().c_str()), {Vector2{button_offset + button_spacing * 1, BUTTON_Y}, 0, 4});
+    UI::Button* cosmetics_btn = new UI::Button(LoadTexture((TEXTURES_PATH/"button_cosmetics.png").string().c_str()), {Vector2{button_offset + button_spacing * 1, BUTTON_Y}, 0, 4});
     cosmetics_btn->DefineOnPressCallback(OpenCosmeticsMenuCallback);
     main_ui->AddElement("button_cosmetics", cosmetics_btn);
     // -----------------
     // Games button
-    UI::Button* games_btn = new UI::Button(LoadTexture((TEXTURES_PATH/"button_games.png").u8string().c_str()), {Vector2{button_offset + button_spacing * 2, BUTTON_Y}, 0, 4});
+    UI::Button* games_btn = new UI::Button(LoadTexture((TEXTURES_PATH/"button_games.png").string().c_str()), {Vector2{button_offset + button_spacing * 2, BUTTON_Y}, 0, 4});
     games_btn->DefineOnPressCallback(OpenGameSelectionCallback);
     main_ui->AddElement("button_games", games_btn);
     // -----------------
     // Settings button
-    UI::Button* settings_btn = new UI::Button(LoadTexture((TEXTURES_PATH/"button_settings.png").u8string().c_str()), {Vector2{button_offset + button_spacing * 3, BUTTON_Y}, 0, 4});
+    UI::Button* settings_btn = new UI::Button(LoadTexture((TEXTURES_PATH/"button_settings.png").string().c_str()), {Vector2{button_offset + button_spacing * 3, BUTTON_Y}, 0, 4});
     main_ui->AddElement("button_settings", settings_btn);
 
 
@@ -75,7 +75,7 @@ void InitMainUI()
     balance_display->SetDrawOrder(2);
     main_ui->AddElement("balance_display", balance_display);
     // --- Money icon ---
-    UI::ImageDisplay *icon_balance = new UI::ImageDisplay(LoadTexture((TEXTURES_PATH/"rock_token.png").u8string().c_str()), {{210, 15}, 0, 4});
+    UI::ImageDisplay *icon_balance = new UI::ImageDisplay(LoadTexture((TEXTURES_PATH/"rock_token.png").string().c_str()), {{210, 15}, 0, 4});
     icon_balance->SetDrawOrder(2);
     main_ui->AddElement("icon_balance", icon_balance);
     
@@ -107,14 +107,14 @@ void InitGamesUI()
     // ------------------------
     // --- EXIT MENU BUTTON ---
     Transform2D return_button_transform = {{33, 33}, 0, 3};
-    UI::Button *button_return = new UI::Button(LoadTexture((TEXTURES_PATH/"button_return.png").u8string().c_str()), return_button_transform);
+    UI::Button *button_return = new UI::Button(LoadTexture((TEXTURES_PATH/"button_return.png").string().c_str()), return_button_transform);
     button_return->DefineOnPressCallback(CloseGameSelectionCallback);
     games_ui->AddElement("button_return", button_return);
 
     // ---------------------
     // --- ROCKFALL GAME ---
     Transform2D button_rockfall_transform = {{100, 200}, 0, 4};
-    UI::Button *button_rockfall = new UI::Button(LoadTexture((TEXTURES_PATH/"button_game_rockfall.png").u8string().c_str()), button_rockfall_transform);
+    UI::Button *button_rockfall = new UI::Button(LoadTexture((TEXTURES_PATH/"button_game_rockfall.png").string().c_str()), button_rockfall_transform);
     button_rockfall->DefineOnPressCallback(StartRockfallGameCallback);
     games_ui->AddElement("button_rockfall", button_rockfall);
     
@@ -169,7 +169,7 @@ void InitRockfallGameUI(){
     balance_display->SetDrawOrder(2);
     rockfall_ui->AddElement("balance_display", balance_display);
     // --- Money icon ---
-    UI::ImageDisplay *icon_balance = new UI::ImageDisplay(LoadTexture((TEXTURES_PATH/"rock_token.png").u8string().c_str()), {{210, 15}, 0, 4});
+    UI::ImageDisplay *icon_balance = new UI::ImageDisplay(LoadTexture((TEXTURES_PATH/"rock_token.png").string().c_str()), {{210, 15}, 0, 4});
     icon_balance->SetDrawOrder(2);
     rockfall_ui->AddElement("icon_balance", icon_balance);
 
@@ -181,12 +181,12 @@ void InitRockfallGameUI(){
     UI::VariableDisplay<int> *score_display = new UI::VariableDisplay<int>(&RockfallGameController::GetScoreRef(), {{120, 40}, 0, 1}, 20, BLACK);
     score_display->SetDrawOrder(2);
     rockfall_ui->AddElement("score_display", score_display);
-    UI::ImageDisplay *score_image = new UI::ImageDisplay(LoadTexture((TEXTURES_PATH/"rockfall_game/rock_7.png").u8string().c_str()), {{75, 20}, 0, 3});
+    UI::ImageDisplay *score_image = new UI::ImageDisplay(LoadTexture((TEXTURES_PATH/"rockfall_game/rock_7.png").string().c_str()), {{75, 20}, 0, 3});
     score_image->SetDrawOrder(2);
     rockfall_ui->AddElement("score_image", score_image);
 
     // --- Pause button ---
-    UI::Button *button_pause = new UI::Button(LoadTexture((TEXTURES_PATH/"button_return.png").u8string().c_str()), {{35, 35}, 0, 3});
+    UI::Button *button_pause = new UI::Button(LoadTexture((TEXTURES_PATH/"button_return.png").string().c_str()), {{35, 35}, 0, 3});
     button_pause->SetDrawOrder(2);
     button_pause->DefineOnPressCallback(PauseRockfallCallback);
     rockfall_ui->AddElement("button_pause", button_pause);
@@ -207,7 +207,7 @@ void InitRockfallPauseUI(){
     UI::Label *label_paused = new UI::Label({{WINDOW_SIZE.x / 2, pause_panel_transform.position.y + 40}, 0, 1}, "- Game Paused -", 35, BLACK, middle);
     rockfall_pause_ui->AddElement("label_paused", label_paused);
     // --- Resume button ---
-    UI::Button *button_resume = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_green.png").u8string().c_str()), {{WINDOW_SIZE.x / 2, 225}, 0, 4});
+    UI::Button *button_resume = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_green.png").string().c_str()), {{WINDOW_SIZE.x / 2, 225}, 0, 4});
     button_resume->DefineOnPressCallback(ResumeRockfallGameCallback);
     rockfall_pause_ui->AddElement("button_resume", button_resume);
     // --- Resume button label ---
@@ -215,7 +215,7 @@ void InitRockfallPauseUI(){
     label_button_resume->SetDrawOrder(1);
     rockfall_pause_ui->AddElement("label_button_resume", label_button_resume);
     // --- Restart button ---
-    UI::Button *button_restart = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_yellow.png").u8string().c_str()), {{WINDOW_SIZE.x / 2, 300}, 0, 4});
+    UI::Button *button_restart = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_yellow.png").string().c_str()), {{WINDOW_SIZE.x / 2, 300}, 0, 4});
     button_restart->DefineOnPressCallback(RestartRockfallCallback);
     rockfall_pause_ui->AddElement("button_restrt", button_restart);
     // --- Restart button label ---
@@ -223,7 +223,7 @@ void InitRockfallPauseUI(){
     label_button_restart->SetDrawOrder(1);
     rockfall_pause_ui->AddElement("label_button_restart", label_button_restart);
     // --- Exit button ---
-    UI::Button *button_exit = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_red.png").u8string().c_str()), {{WINDOW_SIZE.x / 2, 375}, 0, 4});
+    UI::Button *button_exit = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_red.png").string().c_str()), {{WINDOW_SIZE.x / 2, 375}, 0, 4});
     button_exit->DefineOnPressCallback(ExitRockfallGameCallback);
     rockfall_pause_ui->AddElement("button_exit", button_exit);
     // --- Button exit label ---
@@ -268,7 +268,7 @@ void InitRockfallGameOverUI(){
     UI::Label *label_paused = new UI::Label({{WINDOW_SIZE.x / 2, pause_panel_transform.position.y + 40}, 0, 1}, "- Game Over -", 35, BLACK, middle);
     rockfall_game_over_ui->AddElement("label_paused", label_paused);
     // --- Restart button ---
-    UI::Button *button_restart = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_yellow.png").u8string().c_str()), {{WINDOW_SIZE.x / 2, 300}, 0, 4});
+    UI::Button *button_restart = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_yellow.png").string().c_str()), {{WINDOW_SIZE.x / 2, 300}, 0, 4});
     button_restart->DefineOnPressCallback(RestartRockfallCallback);
     rockfall_game_over_ui->AddElement("button_restrt", button_restart);
     // --- Restart button label ---
@@ -276,7 +276,7 @@ void InitRockfallGameOverUI(){
     label_button_restart->SetDrawOrder(1);
     rockfall_game_over_ui->AddElement("label_button_restart", label_button_restart);
     // --- Exit button ---
-    UI::Button *button_exit = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_red.png").u8string().c_str()), {{WINDOW_SIZE.x / 2, 375}, 0, 4});
+    UI::Button *button_exit = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_red.png").string().c_str()), {{WINDOW_SIZE.x / 2, 375}, 0, 4});
     button_exit->DefineOnPressCallback(ExitRockfallGameCallback);
     rockfall_game_over_ui->AddElement("button_exit", button_exit);
     // --- Button exit label ---
@@ -303,7 +303,7 @@ void InitOutOfTimeMenu(){
     UI::Label *label_notime2 = new UI::Label({{WINDOW_SIZE.x / 2 - 100, WINDOW_SIZE.y / 1.8f}, 0, 1}, "(I ran out of time)", 25, BLACK);
     out_of_time_menu->AddElement("label_notime2", label_notime2);
 
-    UI::Button *button_awman = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_green.png").u8string().c_str()), {{WINDOW_SIZE.x / 2, WINDOW_SIZE.y / 1.5f}, 0, 4});
+    UI::Button *button_awman = new UI::Button(LoadTexture((TEXTURES_PATH/"wide_button_green.png").string().c_str()), {{WINDOW_SIZE.x / 2, WINDOW_SIZE.y / 1.5f}, 0, 4});
     button_awman->DefineOnPressCallback(CloseOutOfTimeMenuCallback);
     out_of_time_menu->AddElement("button_awman", button_awman);
 
@@ -327,7 +327,7 @@ void InitCosmeticsMenu(){
     cosmetics_selection_menu->AddElement("panel", panel);
     // RETURN BUTTON
     Transform2D button_return_transform = {{35, 115}, 0, 3};
-    UI::Button *button_return    = new UI::Button(LoadTexture((TEXTURES_PATH/"button_return.png").u8string().c_str()), button_return_transform);
+    UI::Button *button_return    = new UI::Button(LoadTexture((TEXTURES_PATH/"button_return.png").string().c_str()), button_return_transform);
     button_return->DefineOnPressCallback(CloseCosmeticsMenuCallback);
     cosmetics_selection_menu->AddElement("button_return", button_return);
     // COSMETICS LABEL

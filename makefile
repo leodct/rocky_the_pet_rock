@@ -1,88 +1,87 @@
-# Compiler and flags
-CXX := g++
-CXXFLAGS := -std=c++17 -Iinclude -Wall -Wextra -O2
+# --- Compiler and Flags ---
+CXX         := g++
+CXXFLAGS    := -std=c++20 -Wall -Wextra -Iinclude -Ilib/raylib/src
+LDFLAGS     := -Lbin -static-libgcc -static-libstdc++ -Wl,-Bdynamic -lraylib -Wl,-rpath,'$$ORIGIN'
+WINCXX      := x86_64-w64-mingw32-g++
+WIN_LDFLAGS := -Lbin -static-libgcc -static-libstdc++ -Wl,-Bdynamic -lraylib -Wl,-Bstatic -lpthread
 
-# Project directories
+# --- Directories ---
 SRC_DIR := src
 OBJ_DIR := obj
 BIN_DIR := bin
-LIB_DIR_WIN := $(HOME)/raylib_tech/raylib/raylib
+WIN_OBJ_DIR := $(OBJ_DIR)/win
 
-# Cross-compiler for Windows
-CXX_WIN := x86_64-w64-mingw32-g++
-CXXFLAGS_WIN := -I$(LIB_DIR_WIN)/include -Iinclude -std=c++17 --static -Wall -Wextra -O2 -static-libgcc -static-libstdc++ -mwindows
-# Other shit for omp
-CXXFLAGS_WIN += -I/home/linuxbrew/.linuxbrew/opt/libomp/include
-LDFLAGS_WIN += -L/home/linuxbrew/.linuxbrew/opt/libomp/lib -lomp
+# --- Target name ---
+TARGET_NAME := rocky-the-pet-rock
 
+# --- Files ---
+SOURCES  	:= $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/*.cc) $(wildcard $(SRC_DIR)/*.cxx)
+OBJECTS  	:= $(SOURCES:$(SRC_DIR)/%=$(OBJ_DIR)/%.o)
+WIN_OBJECTS := $(SOURCES:$(SRC_DIR)/%=$(WIN_OBJ_DIR)/%.o)
 
-# Debug flags
-DEBUG_FLAGS := -fsanitize=address,undefined -g
+# --- Compile modes ---
+.PHONY: all debug release clean
 
-# Raylib configuration (system installation)
-RAYLIB_FLAGS_LINUX := $(shell pkg-config --libs --cflags raylib)
-RAYLIB_FLAGS_WIN := -L$(LIB_DIR_WIN) -lraylib -lopengl32 -lgdi32 -lwinmm
+all: debug
 
-# Project name
-PROJECT_NAME := rocky_the_pet
+# Debug config
+debug: TARGET := $(BIN_DIR)/$(TARGET_NAME)_debug_exe
+debug: CXXFLAGS += -g -O0 -fsanitize=address
+debug: LDFLAGS  += -fsanitize=address
+debug: $(OBJECTS)
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(OBJECTS) -o $(TARGET) $(LDFLAGS)
+	@echo "Debug Build Success!"
 
-# Output executable names
-TARGET_LINUX := $(BIN_DIR)/$(PROJECT_NAME)
-TARGET_WINDOWS := $(BIN_DIR)/$(PROJECT_NAME).exe
-TARGET_LINUX_DEBUG := $(BIN_DIR)/$(PROJECT_NAME)_debug
+# Release config
+release: TARGET := $(BIN_DIR)/$(TARGET_NAME)_exe
+release: CXXFLAGS += -O2
+release: LDFLAGS  += -s
+release: $(OBJECTS)
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(OBJECTS) -o $(TARGET) $(LDFLAGS)
+	@echo "Build Success!"
 
-# Find all .cpp and .cxx files
-SRCS := $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/*.cxx)
-# Generate corresponding object files in obj/
-OBJS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS)) $(patsubst $(SRC_DIR)/%.cxx, $(OBJ_DIR)/%.o, $(OBJS))
+# Release windows config
+windows: CXX := $(WINCXX)
+windows: CXXFLAGS += -O2
+windows: $(WIN_LDFLAGS) += -s
+windows: $(WIN_OBJECTS)
+	@mkdir -p $(BIN_DIR)
+	$(WINCXX) $(WIN_OBJECTS) -o $(BIN_DIR)/$(TARGET_NAME).exe $(WIN_LDFLAGS)
+	@echo "Windows Build Success!"
 
+# --- Build Rules for Objects ---
 
-# Default rule: Build debug
-all: clean debug
-
-# === RELEASE ===
-release: linux windows
-# === Linux Build ===
-linux: $(TARGET_LINUX)
-
-$(TARGET_LINUX): $(OBJS) | $(BIN_DIR)
-	@echo "Linking Linux executable..."
-	$(CXX) $(CXXFLAGS) $^ -o $@ $(RAYLIB_FLAGS_LINUX)
-
-# === Windows Cross-Compile ===
-windows: $(TARGET_WINDOWS)
-
-$(TARGET_WINDOWS): $(SRCS)
-	@echo "Cross-compiling Windows executable..."
-	$(CXX_WIN) $(CXXFLAGS_WIN) $^ -o $@ $(RAYLIB_FLAGS_WIN)
-
-# Rule to build object files
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
-	@echo "Compiling $<..."
+# Standard Linux Rules
+$(OBJ_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Create necessary directories
-$(BIN_DIR):
-	@mkdir -p $(BIN_DIR)
+$(OBJ_DIR)/%.cc.o: $(SRC_DIR)/%.cc
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(OBJ_DIR):
-	@mkdir -p $(OBJ_DIR)
+$(OBJ_DIR)/%.cxx.o: $(SRC_DIR)/%.cxx
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Specific Windows Rules
+$(WIN_OBJ_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(WINCXX) $(CXXFLAGS) -c $< -o $@
+
+$(WIN_OBJ_DIR)/%.cc.o: $(SRC_DIR)/%.cc
+	@mkdir -p $(dir $@)
+	$(WINCXX) $(CXXFLAGS) -c $< -o $@
+
+$(WIN_OBJ_DIR)/%.cxx.o: $(SRC_DIR)/%.cxx
+	@mkdir -p $(dir $@)
+	$(WINCXX) $(CXXFLAGS) -c $< -o $@
 
 
-# === DEBUG MODE ===
-debug: $(TARGET_LINUX_DEBUG)
-
-$(TARGET_LINUX_DEBUG): $(OBJS) | $(BIN_DIR)
-	@echo "Linking Linux executable with debugging flags..."
-	$(CXX) $(CXXFLAGS) $(DEBUG_FLAGS) $^ -o $@ $(RAYLIB_FLAGS_LINUX)
-
-# Clean up build files
+# --- Cleanup ---
 clean:
-	@echo "Cleaning up..."
-	rm -rf $(OBJ_DIR)/*
-	rm -rf $(BIN_DIR)/$(PROJECT_NAME)
-	rm -rf $(BIN_DIR)/$(PROJECT_NAME)_debug
-	rm -rf $(BIN_DIR)/$(PROJECT_NAME).exe
-
-# Phony targets
-.PHONY: all linux windows clean debug release
+	rm -rf $(OBJ_DIR)/*.o $(OBJ_DIR)/win/*.o
+	rm -f $(BIN_DIR)/*exe
+	@echo "Cleanup done!"

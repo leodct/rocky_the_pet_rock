@@ -31,7 +31,7 @@ void Rock::DrawRock() const
 
 void Rock::LoadRockTexture()
 {
-    Image smallTex = LoadImage((TEXTURES_PATH/"rocky.png").u8string().c_str());
+    Image smallTex = LoadImage((TEXTURES_PATH/"rocky.png").string().c_str());
     ImageResizeCanvas(&smallTex, smallTex.width + 4, smallTex.height + 4, 0, 0, {255, 255, 255, 0});
     texture = LoadTextureFromImage(smallTex);
     UnloadImage(smallTex);

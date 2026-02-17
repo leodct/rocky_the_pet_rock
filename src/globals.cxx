@@ -31,9 +31,9 @@ void LoadCosmetics()
 {
     cosmetics_textures.resize(static_cast<int>(COSMETICS::SIZE));
     cosmetics_textures[0] = Texture2D();
-    cosmetics_textures[1] = LoadTexture((COSMETICS_PATH/"daisy.png").u8string().c_str());
-    cosmetics_textures[2] = LoadTexture((COSMETICS_PATH/"sunglasses.png").u8string().c_str());
-    cosmetics_textures[3] = LoadTexture((COSMETICS_PATH/"red_bowtie.png").u8string().c_str());
+    cosmetics_textures[1] = LoadTexture((COSMETICS_PATH/"daisy.png").string().c_str());
+    cosmetics_textures[2] = LoadTexture((COSMETICS_PATH/"sunglasses.png").string().c_str());
+    cosmetics_textures[3] = LoadTexture((COSMETICS_PATH/"red_bowtie.png").string().c_str());
 }
 
 // --- SHADER SHENANIGANS ---

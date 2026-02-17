@@ -15,7 +15,7 @@ int main(){
     InitWindow(WINDOW_SIZE.x, WINDOW_SIZE.y, "Rocky the pet rock");
     SetTargetFPS(gameSettings.targetFPS);
     SetWindowMonitor(0);
-    Image img = LoadImage((TEXTURES_PATH/"rocky.png").u8string().c_str());
+    Image img = LoadImage((TEXTURES_PATH/"rocky.png").string().c_str());
     SetWindowIcon(img);
     UnloadImage(img);
     InitUISystems();
@@ -24,7 +24,7 @@ int main(){
     // Resource loading
     LoadCosmetics();
     InitShaders();
-    background_texture = LoadTexture((TEXTURES_PATH/"grass.png").u8string().c_str());
+    background_texture = LoadTexture((TEXTURES_PATH/"grass.png").string().c_str());
 
     // Variable declarations
     Rock *rock = new Rock(Vector2{0,0});
