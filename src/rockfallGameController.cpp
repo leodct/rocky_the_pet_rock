@@ -41,8 +41,8 @@ Texture2D RockfallGameController::background_texture = Texture2D();
 
 void RockfallGameController::LoadTextures()
 {
-    player_texture = LoadTexture((TEXTURES_PATH/"rocky.png").u8string().c_str());
-    std::string str = (TEXTURES_PATH/"rockfall_game/rock_").u8string();
+    player_texture = LoadTexture((TEXTURES_PATH/"rocky.png").string().c_str());
+    std::string str = (TEXTURES_PATH/"rockfall_game/rock_").string();
     std::string png = ".png";
     rock_textures.resize(9);
     for (int i = 0; i < 9; i++)

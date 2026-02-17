@@ -4,7 +4,7 @@ void AnimatedTexture::LoadFrames(std::string texture_name, int frame_count)
 {
     for (int i = 0; i < frame_count; i++)
     {
-        frames[i] = LoadTexture(((TEXTURES_PATH/texture_name).u8string() + std::to_string(i+1) + ".png").c_str());
+        frames[i] = LoadTexture(((TEXTURES_PATH/texture_name).string() + std::to_string(i+1) + ".png").c_str());
     }
 }
 
